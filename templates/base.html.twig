@@ -12,6 +12,17 @@
         {% endblock %}
     </head>
     <body>
+        <header style="position: sticky; top: 0; z-index: 50; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(4px); border-bottom: 1px solid #334155;">
+            <nav style="max-width: 960px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;">
+                <a href="{{ path('story_vm_home') }}" style="font-weight: 700; color: #e2e8f0; text-decoration: none; margin-right: 0.75rem;">🌸 nodokaha blossom</a>
+                <a href="{{ path('story_vm_home') }}" style="color: #93c5fd; text-decoration: none;">トップ</a>
+                <a href="{{ path('story_vm_manual') }}" style="color: #93c5fd; text-decoration: none;">VMマニュアル</a>
+                <a href="{{ path('story_vm_lab') }}" style="color: #93c5fd; text-decoration: none;">VMラボ</a>
+                <a href="{{ path('app_register') }}" style="color: #93c5fd; text-decoration: none;">ユーザー登録</a>
+                <a href="{{ path('app_garden_list') }}" style="color: #93c5fd; text-decoration: none;">箱庭一覧</a>
+            </nav>
+        </header>
+
         {% block body %}{% endblock %}
     </body>
 </html>
