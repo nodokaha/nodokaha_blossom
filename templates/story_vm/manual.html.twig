@@ -1,59 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}VM仕様マニュアル{% endblock %}
+{% block title %}SECD VM仕様マニュアル{% endblock %}
 
 {% block body %}
     <style>
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #020617;
-            color: #e2e8f0;
-            line-height: 1.7;
-        }
-
-        .wrap {
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 42px 20px 72px;
-        }
-
-        .panel {
-            border: 1px solid #334155;
-            border-radius: 12px;
-            background: #0f172a;
-            padding: 20px;
-            margin-top: 16px;
-        }
-
+        body { margin: 0; font-family: system-ui, sans-serif; background: #020617; color: #e2e8f0; line-height: 1.7; }
+        .wrap { max-width: 1080px; margin: 0 auto; padding: 42px 20px 72px; }
+        .panel { border: 1px solid #334155; border-radius: 12px; background: #0f172a; padding: 20px; margin-top: 16px; }
         .title { margin: 0; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            text-align: left;
-            vertical-align: top;
-            padding: 10px;
-            border-bottom: 1px solid #334155;
-        }
-
-        .back {
-            color: #67e8f9;
-            text-decoration: none;
-            font-weight: 600;
-        }
+        .back { color: #67e8f9; text-decoration: none; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; vertical-align: top; padding: 10px; border-bottom: 1px solid #334155; }
+        .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .box { border: 1px solid #334155; border-radius: 10px; padding: 12px; background: #111c33; min-height: 96px; }
+        code { color: #67e8f9; }
+        button, select { background: #1e293b; color: #e2e8f0; border: 1px solid #475569; border-radius: 8px; padding: 8px 10px; }
+        .muted { color: #94a3b8; font-size: 0.9rem; }
     </style>
 
     <main class="wrap">
         <a class="back" href="{{ path('story_vm_home') }}">← トップに戻る</a>
-        <h1 class="title">仮想言語仕様書（運用マニュアル）</h1>
-        <p>運営・プレイヤー向けに、現在のVM設定と命令仕様を一覧化した画面です。</p>
+        <h1 class="title">SECDベースVM 仕様 + デイリー命令ビジュアライザ</h1>
+        <p>毎日1命令を積み上げ、任意のタイミングでプログラム実行できます。蓄積命令とメモリ状態を可視化し、パンチコードファイル群を選択してロード可能です。</p>
 
-        <section class="panel" aria-label="VM設定">
+        <section class="panel">
             <h2>VM設定</h2>
             <ul>
                 {% for key, value in vm_settings %}
@@ -62,26 +32,139 @@
             </ul>
         </section>
 
-        <section class="panel" aria-label="命令セット">
-            <h2>仮想言語命令セット</h2>
+        <section class="panel">
+            <h2>命令セット（SECDベース）</h2>
             <table>
-                <thead>
-                    <tr>
-                        <th>Opcode</th>
-                        <th>引数</th>
-                        <th>挙動</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Opcode</th><th>引数</th><th>挙動</th></tr></thead>
                 <tbody>
-                    {% for instruction in instruction_set %}
-                        <tr>
-                            <td><code>{{ instruction.opcode }}</code></td>
-                            <td>{{ instruction.args }}</td>
-                            <td>{{ instruction.effect }}</td>
-                        </tr>
-                    {% endfor %}
+                {% for instruction in instruction_set %}
+                    <tr><td><code>{{ instruction.opcode }}</code></td><td>{{ instruction.args }}</td><td>{{ instruction.effect }}</td></tr>
+                {% endfor %}
                 </tbody>
             </table>
         </section>
+
+        <section class="panel">
+            <h2>パンチコードファイル選択</h2>
+            <select id="punchcardSelect">
+                {% for card in punchcards %}
+                    <option value="{{ card.id }}">{{ card.name }} - {{ card.description }}</option>
+                {% endfor %}
+            </select>
+            <button id="loadCardBtn" type="button">ファイルを命令履歴へロード</button>
+            <p class="muted">※ロード後も「1日1命令」制約で追加可能です。</p>
+        </section>
+
+        <section class="panel">
+            <h2>デイリー実行コンソール</h2>
+            <div class="grid">
+                <div class="box">
+                    <strong>現在日</strong>
+                    <div id="dayLabel">Day 1</div>
+                    <button id="nextDayBtn" type="button">次の日へ進む</button>
+                </div>
+                <div class="box">
+                    <strong>命令追加（1日1回）</strong><br>
+                    <input id="instructionInput" type="text" placeholder="例: LDC 10" style="width: 100%; margin: 8px 0; background:#0b1224;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:8px;">
+                    <button id="addInstructionBtn" type="button">命令を積む</button>
+                    <div id="limitMsg" class="muted"></div>
+                </div>
+                <div class="box">
+                    <strong>実行</strong><br>
+                    <button id="runBtn" type="button">プログラム実行</button>
+                    <div id="runResult" class="muted">未実行</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>ビジュアライザ</h2>
+            <div class="grid">
+                <div class="box"><strong>Control（蓄積命令）</strong><pre id="controlView"></pre></div>
+                <div class="box"><strong>Stack</strong><pre id="stackView"></pre></div>
+                <div class="box"><strong>Memory（consセル）</strong><pre id="memoryView"></pre></div>
+                <div class="box"><strong>Dump</strong><pre id="dumpView">[]</pre></div>
+            </div>
+        </section>
     </main>
+
+    <script>
+        const punchcards = {{ punchcards|json_encode(constant('JSON_UNESCAPED_UNICODE'))|raw }};
+        let day = 1;
+        let alreadyAddedToday = false;
+        let control = [];
+        let stack = [];
+        let memory = [];
+
+        const dayLabel = document.getElementById('dayLabel');
+        const limitMsg = document.getElementById('limitMsg');
+        const controlView = document.getElementById('controlView');
+        const stackView = document.getElementById('stackView');
+        const memoryView = document.getElementById('memoryView');
+        const runResult = document.getElementById('runResult');
+
+        function refreshView() {
+            dayLabel.textContent = `Day ${day}`;
+            controlView.textContent = control.map((i, idx) => `${idx}: ${i}`).join('\n') || '(empty)';
+            stackView.textContent = JSON.stringify(stack, null, 2);
+            memoryView.textContent = JSON.stringify(memory, null, 2);
+        }
+
+        document.getElementById('nextDayBtn').addEventListener('click', () => {
+            day += 1;
+            alreadyAddedToday = false;
+            limitMsg.textContent = 'この日はまだ命令を積めます。';
+            refreshView();
+        });
+
+        document.getElementById('addInstructionBtn').addEventListener('click', () => {
+            if (alreadyAddedToday) {
+                limitMsg.textContent = 'この日は既に命令を積んでいます（1日1命令）。';
+                return;
+            }
+            const input = document.getElementById('instructionInput');
+            const value = input.value.trim();
+            if (!value) return;
+            control.push(value);
+            alreadyAddedToday = true;
+            input.value = '';
+            limitMsg.textContent = '命令を積みました。次の命令は翌日です。';
+            refreshView();
+        });
+
+        document.getElementById('loadCardBtn').addEventListener('click', () => {
+            const id = document.getElementById('punchcardSelect').value;
+            const card = punchcards.find(c => c.id === id);
+            if (!card) return;
+            control = [...control, ...card.program];
+            refreshView();
+        });
+
+        document.getElementById('runBtn').addEventListener('click', () => {
+            stack = [];
+            memory = [];
+            let halted = false;
+            for (const line of control) {
+                const [op, ...rest] = line.split(' ');
+                const arg = rest.join(' ');
+                if (halted) break;
+                switch (op) {
+                    case 'LDC': stack.push(Number(arg)); break;
+                    case 'ADD': if (stack.length >= 2) stack.push(stack.pop() + stack.pop()); break;
+                    case 'SUB': if (stack.length >= 2) { const b = stack.pop(); const a = stack.pop(); stack.push(a - b); } break;
+                    case 'MUL': if (stack.length >= 2) stack.push(stack.pop() * stack.pop()); break;
+                    case 'DIV': if (stack.length >= 2) { const b = stack.pop(); const a = stack.pop(); if (b !== 0) stack.push(a / b); } break;
+                    case 'CONS': if (stack.length >= 2) { const b = stack.pop(); const a = stack.pop(); const cell = { car: a, cdr: b }; memory.push(cell); stack.push(`@${memory.length - 1}`); } break;
+                    case 'CAR': if (stack.length) { const ref = String(stack.pop()); const idx = Number(ref.replace('@', '')); if (memory[idx]) stack.push(memory[idx].car); } break;
+                    case 'CDR': if (stack.length) { const ref = String(stack.pop()); const idx = Number(ref.replace('@', '')); if (memory[idx]) stack.push(memory[idx].cdr); } break;
+                    case 'STOP': halted = true; break;
+                    default: break;
+                }
+            }
+            runResult.textContent = `実行完了: Stack top = ${stack.at(-1) ?? 'N/A'} / 命令数=${control.length}`;
+            refreshView();
+        });
+
+        refreshView();
+    </script>
 {% endblock %}

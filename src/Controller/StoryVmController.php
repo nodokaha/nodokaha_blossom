@@ -22,23 +22,54 @@ final class StoryVmController extends AbstractController
     public function manual(): Response
     {
         $vmSettings = [
+            'vm_model' => 'SECDベース（Stack / Environment / Control / Dump）',
             'tick_interval' => '毎日 04:00 UTC にターン解決',
-            'max_instruction_per_day' => '1命令 / ユーザー',
-            'instruction_timeout' => '1ターン（未実行の場合は破棄）',
-            'world_update_mode' => '差分コミット（イベントログ付き）',
+            'max_instruction_per_day' => '1命令 / ユーザー / 日',
+            'instruction_timeout' => '1ターン（未実行の場合は翌日に持ち越し）',
+            'memory_model' => 'セルメモリ（consセル） + シンボル表',
             'failure_policy' => '不正命令は No-Op として記録',
         ];
 
         $instructionSet = [
-            ['opcode' => 'SCAN', 'args' => 'target, radius', 'effect' => '周囲を観測し、センサー結果をログに追加'],
-            ['opcode' => 'MOVE', 'args' => 'direction, steps', 'effect' => 'ロボットの座標を変更。障害物に衝突した場合は停止'],
-            ['opcode' => 'INTERACT', 'args' => 'object_id', 'effect' => '対象オブジェクトに対し文脈依存アクションを実行'],
-            ['opcode' => 'COMMIT', 'args' => 'flag_key, value', 'effect' => '探索で得た仮説を章進行フラグとして確定申請'],
+            ['opcode' => 'LDC', 'args' => 'value', 'effect' => '定数を Stack に push'],
+            ['opcode' => 'LD', 'args' => '(frame,index)', 'effect' => 'Environment から値を読み込み push'],
+            ['opcode' => 'ADD', 'args' => '-', 'effect' => 'Stack の上位2値を加算して push'],
+            ['opcode' => 'SUB', 'args' => '-', 'effect' => 'Stack の上位2値を減算して push'],
+            ['opcode' => 'MUL', 'args' => '-', 'effect' => 'Stack の上位2値を乗算して push'],
+            ['opcode' => 'DIV', 'args' => '-', 'effect' => 'Stack の上位2値を除算して push（0除算はNo-Op）'],
+            ['opcode' => 'CONS', 'args' => '-', 'effect' => '2値から cons セルを生成しメモリへ格納'],
+            ['opcode' => 'CAR', 'args' => '-', 'effect' => 'ペア先頭要素を push'],
+            ['opcode' => 'CDR', 'args' => '-', 'effect' => 'ペア後尾要素を push'],
+            ['opcode' => 'SEL', 'args' => 'true_label,false_label', 'effect' => '条件分岐し Control を更新'],
+            ['opcode' => 'JOIN', 'args' => '-', 'effect' => 'Dump から分岐復帰'],
+            ['opcode' => 'STOP', 'args' => '-', 'effect' => '実行を停止し結果を確定'],
+        ];
+
+        $punchcards = [
+            [
+                'id' => 'pc_flower_scan',
+                'name' => 'flower_scan.pcd',
+                'description' => '周辺を数値化し閾値比較する探索ルーチン',
+                'program' => ['LDC 8', 'LDC 13', 'ADD', 'LDC 2', 'DIV', 'STOP'],
+            ],
+            [
+                'id' => 'pc_signal_pair',
+                'name' => 'signal_pair.pcd',
+                'description' => '観測値のペアを cons で構築して保持',
+                'program' => ['LDC 1', 'LDC 99', 'CONS', 'CAR', 'STOP'],
+            ],
+            [
+                'id' => 'pc_energy_calc',
+                'name' => 'energy_calc.pcd',
+                'description' => '必要エネルギーを積算して実行可否を判定',
+                'program' => ['LDC 4', 'LDC 6', 'MUL', 'LDC 3', 'SUB', 'STOP'],
+            ],
         ];
 
         return $this->render('story_vm/manual.html.twig', [
             'vm_settings' => $vmSettings,
             'instruction_set' => $instructionSet,
+            'punchcards' => $punchcards,
         ]);
     }
 }
