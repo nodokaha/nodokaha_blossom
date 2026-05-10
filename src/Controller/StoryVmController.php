@@ -125,25 +125,3 @@ final class StoryVmController extends AbstractController
         return $response;
     }
 }
-
-            if ($action === 'run') {
-                $state['run_result'] = $this->storyVmService->runProgram($state['program']);
-                $message = 'プログラムを実行しました。';
-            }
-
-            $this->storyVmStateService->saveState($state);
-        }
-
-        $punchcards = glob(__DIR__.'/../../data/punchcards/*.json') ?: [];
-
-        $response = $this->render('story_vm/lab.html.twig', [
-            'state' => $state,
-            'message' => $message,
-            'today' => $today,
-            'punchcards' => array_map('basename', $punchcards),
-        ]);
-        $response->headers->setCookie(new \Symfony\Component\HttpFoundation\Cookie('vm_user_id', $userId, strtotime('+1 year')));
-
-        return $response;
-    }
-}
