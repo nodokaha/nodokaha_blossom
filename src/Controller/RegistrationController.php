@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Garden;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ final class RegistrationController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
     ): Response {
         $message = null;
+        $dashboardUrl = null;
 
         if ($request->isMethod('POST')) {
             $email = mb_strtolower(trim((string) $request->request->get('email')));
@@ -39,15 +41,23 @@ final class RegistrationController extends AbstractController
                 $user->setEmail($email);
                 $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
 
+                $garden = new Garden();
+                $garden->setOwner($user);
+                $garden->setName('はじまりの箱庭');
+                $garden->setDescription('ユーザー作成時に自動で配布される、最初の箱庭です。');
+
                 $entityManager->persist($user);
+                $entityManager->persist($garden);
                 $entityManager->flush();
 
-                $message = 'ユーザーを作成しました。';
+                $dashboardUrl = $this->generateUrl('app_garden_dashboard', ['userId' => $user->getId()]);
+                $message = 'ユーザーを作成しました。箱庭を1つ配布しています。';
             }
         }
 
         return $this->render('registration/register.html.twig', [
             'message' => $message,
+            'dashboard_url' => $dashboardUrl,
         ]);
     }
 }
