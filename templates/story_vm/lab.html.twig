@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block title %}SECD VM Lab{% endblock %}
+{% block body %}
+<style>body{background:#0b1020;color:#e5e7eb;font-family:system-ui}.wrap{max-width:1100px;margin:0 auto;padding:24px}.panel{border:1px solid #334155;border-radius:10px;padding:14px;margin:12px 0;background:#111827}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #334155;padding:6px;text-align:left}code{color:#67e8f9}</style>
+<main class="wrap">
+<h1>SECDベース VMラボ</h1>
+<p>UTC今日: {{ today }} / 1日1命令を追加可能</p>
+{% if message %}<div class="panel">{{ message }}</div>{% endif %}
+<div class="panel">
+<h2>命令を積む</h2>
+<form method="post">
+<input type="hidden" name="action" value="add_instruction">
+<input name="opcode" placeholder="opcode (e.g. LDC)" required>
+<input name="args" placeholder="args (e.g. 10 / x / 4,8)">
+<button type="submit">追加</button>
+</form>
+</div>
+<div class="panel">
+<h2>パンチコード読み込み</h2>
+<form method="post">
+<input type="hidden" name="action" value="load_punchcard">
+<select name="punchcard_file">
+{% for p in punchcards %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+</select>
+<button>読み込む</button>
+</form>
+</div>
+<div class="panel">
+<h2>積み上げ命令ビジュアライザ</h2>
+<table><thead><tr><th>#</th><th>Opcode</th><th>Args</th><th>By</th><th>Date</th></tr></thead><tbody>
+{% for row in state.program %}<tr><td>{{ loop.index }}</td><td><code>{{ row.opcode }}</code></td><td>{{ row.args }}</td><td>{{ row.by }}</td><td>{{ row.date }}</td></tr>{% else %}<tr><td colspan="5">命令なし</td></tr>{% endfor %}
+</tbody></table>
+<form method="post" style="margin-top:10px"><input type="hidden" name="action" value="run"><button>プログラム実行</button></form>
+</div>
+<div class="panel">
+<h2>メモリ状況（S / E / D）</h2>
+{% if state.run_result %}
+<p><strong>Stack:</strong> {{ state.run_result.stack|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</p>
+<p><strong>Environment:</strong> {{ state.run_result.env|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</p>
+<p><strong>Dump:</strong> {{ state.run_result.dump|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</p>
+<h3>実行トレース</h3>
+<table><thead><tr><th>PC</th><th>Opcode</th><th>Stack</th><th>Env</th><th>Dump</th></tr></thead><tbody>
+{% for t in state.run_result.trace %}<tr><td>{{ t.pc }}</td><td>{{ t.opcode }}</td><td>{{ t.stack|json_encode }}</td><td>{{ t.env|json_encode }}</td><td>{{ t.dump|json_encode }}</td></tr>{% endfor %}
+</tbody></table>
+{% else %}<p>まだ実行していません。</p>{% endif %}
+</div>
+</main>
+{% endblock %}
