@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Service\StoryVmService;
+use App\Service\StoryVmStateService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,7 +11,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class StoryVmController extends AbstractController
 {
-    private const STATE_FILE = __DIR__.'/../../var/story_vm_state.json';
+    public function __construct(
+        private StoryVmService $storyVmService,
+        private StoryVmStateService $storyVmStateService,
+    ) {}
 
     #[Route('/', name: 'story_vm_home')]
     public function index(): Response
@@ -54,7 +59,7 @@ final class StoryVmController extends AbstractController
     #[Route('/vm-lab', name: 'story_vm_lab', methods: ['GET', 'POST'])]
     public function lab(Request $request): Response
     {
-        $state = $this->loadState();
+        $state = $this->storyVmStateService->loadState();
         $userId = (string) $request->cookies->get('vm_user_id', substr(sha1((string) $request->getClientIp()), 0, 8));
         $today = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d');
 
@@ -100,11 +105,11 @@ final class StoryVmController extends AbstractController
             }
 
             if ($action === 'run') {
-                $state['run_result'] = $this->runProgram($state['program']);
+                $state['run_result'] = $this->storyVmService->runProgram($state['program']);
                 $message = 'プログラムを実行しました。';
             }
 
-            $this->saveState($state);
+            $this->storyVmStateService->saveState($state);
         }
 
         $punchcards = glob(__DIR__.'/../../data/punchcards/*.json') ?: [];
@@ -118,101 +123,5 @@ final class StoryVmController extends AbstractController
         $response->headers->setCookie(new \Symfony\Component\HttpFoundation\Cookie('vm_user_id', $userId, strtotime('+1 year')));
 
         return $response;
-    }
-
-    private function runProgram(array $program): array
-    {
-        $stack = [];
-        $env = [];
-        $dump = [];
-        $pc = 0;
-        $trace = [];
-
-        while ($pc < count($program)) {
-            $ins = $program[$pc];
-            $opcode = strtoupper((string) ($ins['opcode'] ?? ''));
-            $argText = (string) ($ins['args'] ?? '');
-            $args = array_map('trim', $argText === '' ? [] : explode(',', $argText));
-
-            switch ($opcode) {
-                case 'LDC':
-                    $stack[] = is_numeric($args[0] ?? null) ? (float) $args[0] : ($args[0] ?? null);
-                    break;
-                case 'LD':
-                    $stack[] = $env[$args[0] ?? ''] ?? null;
-                    break;
-                case 'ST':
-                    if ($args[0] ?? false) {
-                        $env[$args[0]] = array_pop($stack);
-                    }
-                    break;
-                case 'ADD':
-                case 'SUB':
-                case 'MUL':
-                case 'DIV':
-                    if (count($stack) < 2) {
-                        break;
-                    }
-
-                    $b = $stack[count($stack) - 1];
-                    $a = $stack[count($stack) - 2];
-                    if (!is_numeric($a) || !is_numeric($b)) {
-                        break;
-                    }
-                    if ($opcode === 'DIV' && (float) $b === 0.0) {
-                        break;
-                    }
-
-                    array_pop($stack);
-                    array_pop($stack);
-                    if ($opcode === 'ADD') {$stack[] = $a + $b;}
-                    if ($opcode === 'SUB') {$stack[] = $a - $b;}
-                    if ($opcode === 'MUL') {$stack[] = $a * $b;}
-                    if ($opcode === 'DIV') {$stack[] = $a / $b;}
-                    break;
-                case 'SEL':
-                    $cond = array_pop($stack);
-                    $then = (int) ($args[0] ?? $pc + 1);
-                    $else = (int) ($args[1] ?? $pc + 1);
-                    $dump[] = $pc + 1;
-                    $pc = ($cond ? $then : $else) - 1;
-                    break;
-                case 'JOIN':
-                    if ($dump === []) {
-                        break;
-                    }
-                    $pc = ((int) array_pop($dump)) - 1;
-                    break;
-                case 'STOP':
-                    $pc = count($program);
-                    break;
-                default:
-                    break;
-            }
-
-            $trace[] = ['pc' => $pc + 1, 'opcode' => $opcode, 'stack' => $stack, 'env' => $env, 'dump' => $dump];
-            $pc++;
-        }
-
-        return ['stack' => $stack, 'env' => $env, 'dump' => $dump, 'trace' => $trace];
-    }
-
-    private function loadState(): array
-    {
-        if (!is_file(self::STATE_FILE)) {
-            return ['program' => [], 'last_insert_date' => [], 'run_result' => null];
-        }
-
-        $data = json_decode((string) file_get_contents(self::STATE_FILE), true);
-
-        return is_array($data) ? $data : ['program' => [], 'last_insert_date' => [], 'run_result' => null];
-    }
-
-    private function saveState(array $state): void
-    {
-        if (!is_dir(dirname(self::STATE_FILE))) {
-            mkdir(dirname(self::STATE_FILE), 0777, true);
-        }
-        file_put_contents(self::STATE_FILE, json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }
