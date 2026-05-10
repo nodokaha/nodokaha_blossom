@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\GardenRepository;
-use App\Repository\UserRepository;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,16 +19,20 @@ final class GardenController extends AbstractController
     }
 
     #[Route('/my-garden/{userId}', name: 'app_garden_dashboard', methods: ['GET'])]
-    public function dashboard(int $userId, UserRepository $userRepository, GardenRepository $gardenRepository): Response
+    public function dashboard(int $userId, GardenRepository $gardenRepository): Response
     {
-        $user = $userRepository->find($userId);
+        $currentUser = $this->getUser();
 
-        if ($user === null) {
-            throw $this->createNotFoundException('ユーザーが見つかりません。');
+        if (!$currentUser instanceof User) {
+            throw $this->createAccessDeniedException('ログインが必要です。');
+        }
+
+        if ($currentUser->getId() !== $userId) {
+            throw $this->createAccessDeniedException('この箱庭にはアクセスできません。');
         }
 
         return $this->render('garden/dashboard.html.twig', [
-            'owner' => $user,
+            'owner' => $currentUser,
             'gardens' => $gardenRepository->findByOwnerId($userId),
         ]);
     }
