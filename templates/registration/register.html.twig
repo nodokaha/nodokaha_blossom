@@ -10,6 +10,12 @@
             <p>{{ message }}</p>
         {% endif %}
 
+        {% if dashboard_url %}
+            <p><a href="{{ dashboard_url }}">あなた専用の箱庭管理画面を開く</a></p>
+        {% endif %}
+
+        <p><a href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a></p>
+
         <form method="post">
             <div style="margin-bottom: 1rem;">
                 <label for="email">メールアドレス</label><br>

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -28,6 +30,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private string $password = '';
+
+    /**
+     * @var Collection<int, Garden>
+     */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Garden::class, orphanRemoval: true)]
+    private Collection $gardens;
+
+    public function __construct()
+    {
+        $this->gardens = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +87,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Garden>
+     */
+    public function getGardens(): Collection
+    {
+        return $this->gardens;
+    }
+
+    public function addGarden(Garden $garden): static
+    {
+        if (!$this->gardens->contains($garden)) {
+            $this->gardens->add($garden);
+            $garden->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGarden(Garden $garden): static
+    {
+        if ($this->gardens->removeElement($garden) && $garden->getOwner() === $this) {
+            $garden->setOwner(null);
+        }
 
         return $this;
     }

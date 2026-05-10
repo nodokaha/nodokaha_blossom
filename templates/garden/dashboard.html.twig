@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ owner.email }}さんの箱庭{% endblock %}
+
+{% block body %}
+    <main style="max-width: 720px; margin: 2rem auto; padding: 1rem;">
+        <h1>{{ owner.email }}さん専用の箱庭管理画面</h1>
+        <p>この画面で作成済みの箱庭を観察できます。</p>
+
+        {% if gardens is empty %}
+            <p>箱庭がありません。</p>
+        {% else %}
+            {% for garden in gardens %}
+                <article style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                    <h2 style="margin-top: 0;">{{ garden.name }}</h2>
+                    <p>{{ garden.description }}</p>
+                </article>
+            {% endfor %}
+        {% endif %}
+
+        <p><a href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a></p>
+    </main>
+{% endblock %}
