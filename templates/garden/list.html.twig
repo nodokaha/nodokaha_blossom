@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}みんなの箱庭{% endblock %}
+
+{% block body %}
+    <main style="max-width: 900px; margin: 2rem auto; padding: 1rem;">
+        <h1>みんなの箱庭一覧</h1>
+        <p>他ユーザーが作成した箱庭を一覧で観察できます。</p>
+
+        {% if gardens is empty %}
+            <p>まだ箱庭は作成されていません。</p>
+        {% else %}
+            <ul style="display: grid; gap: 1rem; list-style: none; padding: 0;">
+                {% for garden in gardens %}
+                    <li style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem;">
+                        <h2 style="margin-top: 0;">{{ garden.name }}</h2>
+                        <p>{{ garden.description }}</p>
+                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0;">オーナー: {{ garden.owner.email }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </main>
+{% endblock %}
