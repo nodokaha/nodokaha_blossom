@@ -3,29 +3,132 @@
 {% block title %}ユーザー登録{% endblock %}
 
 {% block body %}
-    <main style="max-width: 560px; margin: 2rem auto; padding: 1rem;">
-        <h1>ユーザー登録</h1>
+    <style>
+        .register-wrap {
+            max-width: 640px;
+            margin: 2.5rem auto;
+            padding: 0 1rem;
+        }
 
-        {% if message %}
-            <p>{{ message }}</p>
-        {% endif %}
+        .register-card {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 1.5rem;
+        }
 
-        {% if dashboard_url %}
-            <p><a href="{{ dashboard_url }}">あなた専用の箱庭管理画面を開く</a></p>
-        {% endif %}
+        .register-title {
+            margin: 0;
+            font-size: 1.75rem;
+            color: #0f172a;
+        }
 
-        <p><a href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a></p>
+        .register-sub {
+            margin: 0.5rem 0 1.25rem;
+            color: #475569;
+        }
 
-        <form method="post">
-            <div style="margin-bottom: 1rem;">
-                <label for="email">メールアドレス</label><br>
-                <input id="email" type="email" name="email" required>
+        .register-alert {
+            border-radius: 10px;
+            padding: 0.75rem 0.9rem;
+            margin-bottom: 1rem;
+            border: 1px solid #bae6fd;
+            background: #ecfeff;
+            color: #0e7490;
+        }
+
+        .register-success {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .register-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .register-link {
+            text-decoration: none;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            border-radius: 999px;
+            padding: 0.45rem 0.85rem;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 0.7rem 0.8rem;
+            font-size: 1rem;
+            color: #0f172a;
+            background: #ffffff;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .submit-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 0.7rem 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            cursor: pointer;
+        }
+    </style>
+
+    <main class="register-wrap">
+        <section class="register-card">
+            <h1 class="register-title">ユーザー登録</h1>
+            <p class="register-sub">登録後に、あなた専用の箱庭管理画面へ移動できます。</p>
+
+            {% if message %}
+                <p class="register-alert">{{ message }}</p>
+            {% endif %}
+
+            {% if dashboard_url %}
+                <p class="register-alert register-success">
+                    登録が完了しました。<a href="{{ dashboard_url }}">あなた専用の箱庭管理画面を開く</a>
+                </p>
+            {% endif %}
+
+            <div class="register-links">
+                <a class="register-link" href="{{ path('story_vm_top') }}">トップへ戻る</a>
+                <a class="register-link" href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a>
             </div>
-            <div style="margin-bottom: 1rem;">
-                <label for="password">パスワード（8文字以上）</label><br>
-                <input id="password" type="password" name="password" minlength="8" required>
-            </div>
-            <button type="submit">作成する</button>
-        </form>
+
+            <form method="post">
+                <div class="form-group">
+                    <label class="form-label" for="email">メールアドレス</label>
+                    <input class="form-input" id="email" type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">パスワード（8文字以上）</label>
+                    <input class="form-input" id="password" type="password" name="password" minlength="8" required>
+                </div>
+                <button class="submit-btn" type="submit">作成する</button>
+            </form>
+        </section>
     </main>
 {% endblock %}
