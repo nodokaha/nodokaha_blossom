@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}仮想言語マニュアル{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #0b1120;
+            color: #e2e8f0;
+            line-height: 1.7;
+        }
+
+        .wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 48px 20px 80px;
+        }
+
+        .card {
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            background: #0f172a;
+            margin-bottom: 18px;
+        }
+
+        h1, h2 { line-height: 1.3; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid #334155;
+            vertical-align: top;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            color: #67e8f9;
+            font-weight: 700;
+        }
+
+        a { color: #22d3ee; }
+        .sub { color: #94a3b8; }
+    </style>
+
+    <main class="wrap">
+        <section class="card">
+            <h1>仮想言語マニュアル（VM-Story v0.1）</h1>
+            <p class="sub">本ページは、プレイヤーが日次で投入する仮想言語命令の最小仕様をまとめたものです。</p>
+            <p><a href="{{ path('story_vm_home') }}">← トップへ戻る</a></p>
+        </section>
+
+        <section class="card">
+            <h2>実行モデル</h2>
+            <ul>
+                <li>1日1回のターン更新で、各プレイヤーのプログラムが順次実行されます。</li>
+                <li>1プログラムは最大8命令まで、上から順番に評価されます。</li>
+                <li>エネルギーが足りない命令はスキップされ、失敗ログとして記録されます。</li>
+                <li>命令実行後の世界状態差分が、翌ターンの観測結果に反映されます。</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>命令セット</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Opcode</th>
+                    <th>消費</th>
+                    <th>説明</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ins in instruction_set %}
+                    <tr>
+                        <td class="mono">{{ ins.op }}</td>
+                        <td>{{ ins.cost }}</td>
+                        <td>{{ ins.desc }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="card">
+            <h2>サンプル</h2>
+            <p class="mono">SCAN N<br>MOVE N<br>ASK caretaker weather<br>MARK flower_hint north_bridge</p>
+            <p class="sub">北方向を探索し、移動後にNPCへ質問。得たヒントをメモリに保存して次ターンの意思決定へ引き継ぐ例です。</p>
+        </section>
+    </main>
+{% endblock %}

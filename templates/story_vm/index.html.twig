@@ -78,16 +78,17 @@
             <span class="tag">CONCEPT SITE</span>
             <h1>少女ロボットが花を探す、<br>非同期協力型VMストーリーゲーム</h1>
             <p>
-                プレイヤーは「1日{{ daily_token_limit }}トークン」だけVM命令を投入できます。命令はすぐに正解が見えない抽象課題に向けて蓄積され、
+                プレイヤーは「1日{{ vm_config.daily_token_limit }}トークン」だけVM命令を投入できます。命令はすぐに正解が見えない抽象課題に向けて蓄積され、
                 ほかのユーザーの行動や世界状態の変化と干渉しながら、少女ロボットの物語が少しずつ進みます。
             </p>
             <p class="sub">運営はチャプター単位でストーリーボードを提示し、プレイヤーは「何をすべきか」を自分で解釈して試行します。</p>
+            <p><a href="{{ path('story_vm_manual') }}" style="color: var(--accent); font-weight: 700;">仮想言語マニュアルを見る →</a></p>
         </section>
 
         <section class="grid" aria-label="核心ループ">
             <article class="card">
                 <h2>1. 毎日1命令</h2>
-                <div class="kpi">{{ daily_token_limit }}</div>
+                <div class="kpi">{{ vm_config.daily_token_limit }}</div>
                 <p>貴重な1手をどこに使うかが戦略。命令履歴は物語ログとして残り、後から意味がつながります。</p>
             </article>
             <article class="card">
@@ -98,6 +99,17 @@
                 <h2>3. 抽象目標</h2>
                 <p>例: 「花を見つける」。直接命令に落とし込めない目標により、解釈・観測・協調がゲーム体験の中心になります。</p>
             </article>
+        </section>
+
+        <section class="card" style="margin-top: 18px;">
+            <h2>VM設定（初期案）</h2>
+            <ul>
+                <li>ターン更新時刻: {{ vm_config.tick_interval }}</li>
+                <li>1プログラム最大命令数: {{ vm_config.max_program_length }}</li>
+                <li>メモリスロット: {{ vm_config.memory_slots }}</li>
+                <li>スタック上限: {{ vm_config.stack_limit }}</li>
+                <li>1ターンの行動エネルギー: {{ vm_config.energy_per_turn }}</li>
+            </ul>
         </section>
 
         <section class="card" style="margin-top: 18px;">
