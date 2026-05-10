@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}少女ロボットと花のVM箱庭{% endblock %}
+
+{% block body %}
+    <style>
+        :root {
+            --bg: #090d1f;
+            --card: #111934;
+            --line: #2f3a68;
+            --text: #e8edff;
+            --sub: #a0afd8;
+            --accent: #6ee7ff;
+            --accent2: #c4b5fd;
+            --ok: #86efac;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, "Noto Sans JP", system-ui, sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at 0% 0%, #16213f 0%, var(--bg) 42%);
+            line-height: 1.65;
+        }
+        .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 20px 72px; }
+        .hero, .card { border: 1px solid var(--line); border-radius: 14px; background: rgba(17, 25, 52, 0.82); }
+        .hero { padding: 28px; }
+        .card { padding: 18px; }
+        .grid { display: grid; gap: 14px; }
+        .three { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+        .two { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        h1 { margin: 0 0 8px; font-size: clamp(1.45rem, 2.8vw, 2.2rem); }
+        h2 { margin: 0 0 10px; font-size: 1.1rem; }
+        p { margin: 0; }
+        .tag { display: inline-block; margin-bottom: 8px; padding: 4px 10px; border-radius: 999px; font-size: .78rem; font-weight: 700; color: #061126; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        .muted { color: var(--sub); }
+        .kpi { font-size: 2rem; font-weight: 800; color: var(--accent); }
+        .mission { margin-top: 18px; }
+        .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+        .log li { display: grid; grid-template-columns: 64px 86px 1fr; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
+        code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ok); }
+        .input {
+            margin-top: 12px;
+            background: #0b1228;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 12px;
+        }
+    </style>
+
+    <main class="wrap">
+        <section class="hero">
+            <span class="tag">STORY VM SANDBOX</span>
+            <h1>1日{{ daily_token_limit }}命令で世界を書き換え、少女ロボットの物語を進める。</h1>
+            <p class="muted">運営が提示する抽象目標に対して、プレイヤー同士が非同期に推論と介入を重ねる物語駆動型ゲーム。</p>
+        </section>
+
+        <section class="grid three" style="margin-top: 14px;">
+            <article class="card"><h2>デイリー制限</h2><div class="kpi">{{ daily_token_limit }}</div><p>1日1トークンのみ。投入の重みがドラマになる。</p></article>
+            <article class="card"><h2>相互干渉</h2><p>他者の命令で地形・環境変数・NPCが変化。昨日の最適が今日は崩れる。</p></article>
+            <article class="card"><h2>抽象ゴール</h2><p>「花を見つける」のように直接命令へ落とせない目標を観測から解く。</p></article>
+        </section>
+
+        <section class="mission card">
+            <h2>本日のチャプター課題</h2>
+            <p><strong>{{ today_mission.chapter }}</strong></p>
+            <p style="margin-top: 6px;">{{ today_mission.goal }}</p>
+            <p class="muted" style="margin-top: 8px;">ヒント: {{ today_mission.hint }}</p>
+            <div class="input">
+                <p class="muted">例: 今日の1命令（疑似）</p>
+                <code>SCAN sector="NW" depth=3 mode="thermal"</code>
+            </div>
+        </section>
+
+        <section class="grid two" style="margin-top: 14px;">
+            <article class="card">
+                <h2>直近の世界ログ</h2>
+                <ul class="log">
+                    {% for log in recent_logs %}
+                        <li>
+                            <strong>{{ log.time }}</strong>
+                            <span class="muted">{{ log.actor }}</span>
+                            <span>{{ log.effect }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </article>
+            <article class="card">
+                <h2>MVPロードマップ</h2>
+                <ul>
+                    <li>認証と「日次1命令」トークン消費。</li>
+                    <li>命令キュー + ターン更新バッチのVM実行。</li>
+                    <li>世界差分ログと観測履歴のタイムライン。</li>
+                    <li>運営向け: チャプター作成・目標配信UI。</li>
+                </ul>
+            </article>
+        </section>
+    </main>
+{% endblock %}
