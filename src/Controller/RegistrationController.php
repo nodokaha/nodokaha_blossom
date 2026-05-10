@@ -23,6 +23,7 @@ final class RegistrationController extends AbstractController
     ): Response {
         $message = null;
         $dashboardUrl = null;
+        $loginUrl = null;
 
         if ($request->isMethod('POST')) {
             $email = mb_strtolower(trim((string) $request->request->get('email')));
@@ -51,13 +52,15 @@ final class RegistrationController extends AbstractController
                 $entityManager->flush();
 
                 $dashboardUrl = $this->generateUrl('app_garden_dashboard', ['userId' => $user->getId()]);
-                $message = 'ユーザーを作成しました。箱庭を1つ配布しています。';
+                $loginUrl = $this->generateUrl('app_login');
+                $message = 'ユーザーを作成しました。ログインして箱庭を確認してください。';
             }
         }
 
         return $this->render('registration/register.html.twig', [
             'message' => $message,
             'dashboard_url' => $dashboardUrl,
+            'login_url' => $loginUrl,
         ]);
     }
 }
