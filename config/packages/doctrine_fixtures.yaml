@@ -1,0 +1,11 @@
+# Doctrine Fixtures Bundle Configuration
+# See https://symfony.com/doc/current/bundles/DoctrineFixturesBundle/index.html
+
+doctrine_fixtures:
+    # Specify the loader class for fixtures
+    orm:
+        default:
+            # The directory where fixtures are located
+            # fixtures_path: 'src/DataFixtures'
+            # Whether to purge the database before loading fixtures
+            # purge_with_truncate: false
