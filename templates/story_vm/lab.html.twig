@@ -1,11 +1,22 @@
 {% extends 'base.html.twig' %}
 {% block title %}SECD VM Lab{% endblock %}
 {% block body %}
-<style>body{background:#0b1020;color:#e5e7eb;font-family:system-ui}.wrap{max-width:1100px;margin:0 auto;padding:24px}.panel{border:1px solid #334155;border-radius:10px;padding:14px;margin:12px 0;background:#111827}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #334155;padding:6px;text-align:left}code{color:#67e8f9}</style>
+<style>body{background:#0b1020;color:#e5e7eb;font-family:system-ui}.wrap{max-width:1100px;margin:0 auto;padding:24px}.panel{border:1px solid #334155;border-radius:10px;padding:14px;margin:12px 0;background:#111827}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #334155;padding:6px;text-align:left}code{color:#67e8f9}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.kpi{padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}.log{font-size:.9rem;color:#cbd5e1}</style>
 <main class="wrap">
-<h1>SECDベース VMラボ</h1>
+<h1>SECDベース VMラボ（オンライン箱庭）</h1>
 <p>UTC今日: {{ today }} / 1日1命令を追加可能</p>
 {% if message %}<div class="panel">{{ message }}</div>{% endif %}
+<div class="panel">
+<h2>ワールド進行ステータス</h2>
+<div class="kpis">
+<div class="kpi"><strong>Day</strong><div>{{ state.world.day }}</div></div>
+<div class="kpi"><strong>Chapter</strong><div>{{ state.world.chapter }}</div></div>
+<div class="kpi"><strong>Objective</strong><div>{{ state.world.objective }}</div></div>
+<div class="kpi"><strong>Bloom Rate</strong><div>{{ state.world.biome.bloom_rate }}%</div></div>
+<div class="kpi"><strong>Weather</strong><div>{{ state.world.biome.weather }}</div></div>
+<div class="kpi"><strong>Caretaker AI</strong><div>{{ state.world.npcs.caretaker_ai }}</div></div>
+</div>
+</div>
 <div class="panel">
 <h2>命令を積む</h2>
 <form method="post">
@@ -30,7 +41,11 @@
 <table><thead><tr><th>#</th><th>Opcode</th><th>Args</th><th>By</th><th>Date</th></tr></thead><tbody>
 {% for row in state.program %}<tr><td>{{ loop.index }}</td><td><code>{{ row.opcode }}</code></td><td>{{ row.args }}</td><td>{{ row.by }}</td><td>{{ row.date }}</td></tr>{% else %}<tr><td colspan="5">命令なし</td></tr>{% endfor %}
 </tbody></table>
-<form method="post" style="margin-top:10px"><input type="hidden" name="action" value="run"><button>プログラム実行</button></form>
+<form method="post" style="margin-top:10px"><input type="hidden" name="action" value="run"><button>プログラム実行 + ターン解決</button></form>
+</div>
+<div class="panel">
+<h2>ワールドクロニクル（共有ログ）</h2>
+<ul class="log">{% for entry in state.world.chronicle|reverse %}<li>{{ entry }}</li>{% else %}<li>まだ記録がありません。</li>{% endfor %}</ul>
 </div>
 <div class="panel">
 <h2>メモリ状況（S / E / D）</h2>

@@ -80,6 +80,7 @@ final class StoryVmController extends AbstractController
                 } else {
                     $state['program'][] = ['opcode' => $opcode, 'args' => $args, 'by' => $userId, 'date' => $today];
                     $state['last_insert_date'][$userId] = $today;
+                    $state['world']['chronicle'][] = sprintf('Day %d: %s が %s %s を投入', (int) ($state['world']['day'] ?? 1), $userId, $opcode, $args);
                     $message = sprintf('命令 %s を積みました。', $opcode);
                 }
             }
@@ -99,6 +100,7 @@ final class StoryVmController extends AbstractController
                                 'date' => $today,
                             ];
                         }
+                        $state['world']['chronicle'][] = 'パンチコードを投入、協力シーケンスを更新';
                         $message = 'パンチコードを読み込みました。';
                     }
                 }
@@ -106,7 +108,8 @@ final class StoryVmController extends AbstractController
 
             if ($action === 'run') {
                 $state['run_result'] = $this->storyVmService->runProgram($state['program']);
-                $message = 'プログラムを実行しました。';
+                $state = $this->resolveWorldTurn($state);
+                $message = 'プログラムを実行し、箱庭ターンを進めました。';
             }
 
             $this->storyVmStateService->saveState($state);
@@ -123,5 +126,34 @@ final class StoryVmController extends AbstractController
         $response->headers->setCookie(new \Symfony\Component\HttpFoundation\Cookie('vm_user_id', $userId, strtotime('+1 year')));
 
         return $response;
+    }
+
+    private function resolveWorldTurn(array $state): array
+    {
+        $env = $state['run_result']['env'] ?? [];
+        $world = $state['world'];
+
+        $light = (float) ($env['light'] ?? 0);
+        $water = (float) ($env['water'] ?? 0);
+        $care = max(0, min(20, ($light + $water) * 2));
+
+        $world['day'] = ((int) ($world['day'] ?? 1)) + 1;
+        $world['biome']['bloom_rate'] = max(0, min(100, (int) ($world['biome']['bloom_rate'] ?? 0) + (int) round($care - 3)));
+        $world['biome']['energy'] = max(0, min(20, (int) ($world['biome']['energy'] ?? 0) + (int) round(($light - $water) / 2)));
+        $world['biome']['weather'] = $world['biome']['energy'] > 8 ? 'sunny' : ($world['biome']['energy'] < 3 ? 'rain' : 'mist');
+        $world['npcs']['caretaker_ai'] = $world['biome']['bloom_rate'] >= 20 ? '開花同期モード' : '巡回補助モード';
+
+        $world['chronicle'][] = sprintf(
+            'Day %d 解決: bloom=%d%%, weather=%s, caretaker=%s',
+            $world['day'],
+            $world['biome']['bloom_rate'],
+            $world['biome']['weather'],
+            $world['npcs']['caretaker_ai']
+        );
+
+        $world['chronicle'] = array_slice($world['chronicle'], -10);
+        $state['world'] = $world;
+
+        return $state;
     }
 }
