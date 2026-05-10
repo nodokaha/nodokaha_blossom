@@ -1,0 +1,6 @@
+[
+  {"opcode":"LDC","args":"10"},
+  {"opcode":"LDC","args":"20"},
+  {"opcode":"ADD","args":""},
+  {"opcode":"STOP","args":""}
+]
