@@ -36,7 +36,7 @@ jobs:
           coverage: xdebug
           
       - name: Copy .env.test.local
-        run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+        run: php -r "file_exists('.env') || copy('.env.test', '.env');"
 
       # Local MySQL service in GitHub hosted environments is disabled by default.
       # If you are using it instead of service containers, make sure you start it.
