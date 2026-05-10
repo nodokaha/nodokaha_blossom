@@ -107,9 +107,9 @@
                 <p class="register-alert">{{ message }}</p>
             {% endif %}
 
-            {% if dashboard_url %}
+            {% if login_url %}
                 <p class="register-alert register-success">
-                    登録が完了しました。<a href="{{ dashboard_url }}">あなた専用の箱庭管理画面を開く</a>
+                    アカウント作成後は <a href="{{ login_url }}">ログイン</a> してください。
                 </p>
             {% endif %}
 
