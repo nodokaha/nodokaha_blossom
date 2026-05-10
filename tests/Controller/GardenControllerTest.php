@@ -5,6 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\Garden;
 use App\Entity\User;
 use App\Repository\GardenRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class GardenControllerTest extends WebTestCase
@@ -35,20 +36,20 @@ final class GardenControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $owner = (new User())->setEmail('bob@example.com');
-        $this->setUserId($owner, 1);
+        $owner = $this->createPersistedUser('bob@example.com');
+        $ownerId = (int) $owner->getId();
         $garden = (new Garden())
             ->setOwner($owner)
             ->setName('専用箱庭')
             ->setDescription('自分の箱庭です');
 
         $gardenRepository = $this->createMock(GardenRepository::class);
-        $gardenRepository->method('findByOwnerId')->with(1)->willReturn([$garden]);
+        $gardenRepository->method('findByOwnerId')->with($ownerId)->willReturn([$garden]);
 
         static::getContainer()->set(GardenRepository::class, $gardenRepository);
-        $client->loginUser($owner);
+        $client->loginUser($owner, 'main');
 
-        $client->request('GET', '/my-garden/1');
+        $client->request('GET', sprintf('/my-garden/%d', $ownerId));
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'bob@example.comさん専用の箱庭管理画面');
@@ -59,18 +60,26 @@ final class GardenControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $currentUser = (new User())->setEmail('charlie@example.com');
-        $this->setUserId($currentUser, 1);
+        $currentUser = $this->createPersistedUser('charlie@example.com');
+        $currentUserId = (int) $currentUser->getId();
 
-        $client->loginUser($currentUser);
-        $client->request('GET', '/my-garden/2');
+        $client->loginUser($currentUser, 'main');
+        $client->request('GET', sprintf('/my-garden/%d', $currentUserId + 1));
 
         $this->assertResponseStatusCodeSame(403);
     }
 
-    private function setUserId(User $user, int $id): void
+    private function createPersistedUser(string $email): User
     {
-        $reflection = new \ReflectionProperty(User::class, 'id');
-        $reflection->setValue($user, $id);
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+
+        $user = (new User())
+            ->setEmail($email)
+            ->setPassword('test-password');
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return $user;
     }
 }
