@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ユーザー登録{% endblock %}
+
+{% block body %}
+    <main style="max-width: 560px; margin: 2rem auto; padding: 1rem;">
+        <h1>ユーザー登録</h1>
+
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+
+        <form method="post">
+            <div style="margin-bottom: 1rem;">
+                <label for="email">メールアドレス</label><br>
+                <input id="email" type="email" name="email" required>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label for="password">パスワード（8文字以上）</label><br>
+                <input id="password" type="password" name="password" minlength="8" required>
+            </div>
+            <button type="submit">作成する</button>
+        </form>
+    </main>
+{% endblock %}
