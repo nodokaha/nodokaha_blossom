@@ -150,15 +150,25 @@ final class StoryVmController extends AbstractController
                 case 'SUB':
                 case 'MUL':
                 case 'DIV':
-                    $b = array_pop($stack);
-                    $a = array_pop($stack);
+                    if (count($stack) < 2) {
+                        break;
+                    }
+
+                    $b = $stack[count($stack) - 1];
+                    $a = $stack[count($stack) - 2];
                     if (!is_numeric($a) || !is_numeric($b)) {
                         break;
                     }
+                    if ($opcode === 'DIV' && (float) $b === 0.0) {
+                        break;
+                    }
+
+                    array_pop($stack);
+                    array_pop($stack);
                     if ($opcode === 'ADD') {$stack[] = $a + $b;}
                     if ($opcode === 'SUB') {$stack[] = $a - $b;}
                     if ($opcode === 'MUL') {$stack[] = $a * $b;}
-                    if ($opcode === 'DIV' && (float) $b !== 0.0) {$stack[] = $a / $b;}
+                    if ($opcode === 'DIV') {$stack[] = $a / $b;}
                     break;
                 case 'SEL':
                     $cond = array_pop($stack);
@@ -168,6 +178,9 @@ final class StoryVmController extends AbstractController
                     $pc = ($cond ? $then : $else) - 1;
                     break;
                 case 'JOIN':
+                    if ($dump === []) {
+                        break;
+                    }
                     $pc = ((int) array_pop($dump)) - 1;
                     break;
                 case 'STOP':
