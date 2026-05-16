@@ -46,6 +46,11 @@ class StoryVmStateService
             'npcs' => [
                 'caretaker_ai' => '待機中',
             ],
+            'field' => [
+                'width' => 12,
+                'height' => 8,
+                'tiles' => [],
+            ],
             'chronicle' => [],
         ];
     }
