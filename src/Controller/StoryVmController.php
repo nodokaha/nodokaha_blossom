@@ -11,6 +11,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class StoryVmController extends AbstractController
 {
+    private const ALLOWED_OPCODES = ['LDC', 'LD', 'ST', 'ADD', 'SUB', 'MUL', 'DIV', 'SEL', 'JOIN', 'BROADCAST', 'INFLUENCE', 'STOP'];
+
     public function __construct(
         private StoryVmService $storyVmService,
         private StoryVmStateService $storyVmStateService,
@@ -63,6 +65,7 @@ final class StoryVmController extends AbstractController
     public function lab(Request $request): Response
     {
         $state = $this->storyVmStateService->loadState();
+        $state = $this->applySemiannualChallenge($state);
         $userId = (string) $request->cookies->get('vm_user_id', substr(sha1((string) $request->getClientIp()), 0, 8));
         $today = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Y-m-d');
 
@@ -80,6 +83,8 @@ final class StoryVmController extends AbstractController
                     $message = '今日はすでに1命令を積んでいます。次は明日追加できます。';
                 } elseif ($opcode === '') {
                     $message = 'Opcodeは必須です。';
+                } elseif (!in_array($opcode, self::ALLOWED_OPCODES, true)) {
+                    $message = sprintf('Opcode %s は未対応です。利用可能: %s', $opcode, implode(', ', self::ALLOWED_OPCODES));
                 } else {
                     $state['program'][] = ['opcode' => $opcode, 'args' => $args, 'by' => $userId, 'date' => $today];
                     $state['last_insert_date'][$userId] = $today;
@@ -128,10 +133,82 @@ final class StoryVmController extends AbstractController
             'message' => $message,
             'today' => $today,
             'punchcards' => array_map('basename', $punchcards),
+            'remaining_token' => (($state['last_insert_date'][$userId] ?? null) === $today) ? 0 : 1,
+            'allowed_opcodes' => self::ALLOWED_OPCODES,
         ]);
         $response->headers->setCookie(new \Symfony\Component\HttpFoundation\Cookie('vm_user_id', $userId, strtotime('+1 year')));
 
         return $response;
+    }
+
+    #[Route('/vm-admin', name: 'story_vm_admin', methods: ['GET', 'POST'])]
+    public function admin(Request $request): Response
+    {
+        $state = $this->storyVmStateService->loadState();
+        $message = null;
+
+        if ($request->isMethod('POST')) {
+            $title = trim((string) $request->request->get('title'));
+            $objective = trim((string) $request->request->get('objective'));
+            $period = trim((string) $request->request->get('period'));
+
+            if ($title === '' || $objective === '' || $period === '') {
+                $message = 'period / title / objective はすべて必須です。';
+            } else {
+                $state['world']['semiannual_challenges'] = array_values(array_filter(
+                    $state['world']['semiannual_challenges'] ?? [],
+                    static fn (array $challenge): bool => (string) ($challenge['period'] ?? '') !== $period
+                ));
+                $state['world']['semiannual_challenges'][] = [
+                    'period' => $period,
+                    'title' => $title,
+                    'objective' => $objective,
+                ];
+                $state['world']['chronicle'][] = sprintf('運営更新: 半年課題 %s を登録 (%s)', $period, $title);
+                $message = sprintf('半年課題 %s を登録しました。', $period);
+                $state = $this->applySemiannualChallenge($state);
+                $this->storyVmStateService->saveState($state);
+            }
+        }
+
+        return $this->render('story_vm/admin.html.twig', [
+            'state' => $state,
+            'message' => $message,
+            'active_period' => $this->resolveCurrentPeriodKey($state),
+        ]);
+    }
+
+    private function applySemiannualChallenge(array $state): array
+    {
+        $period = $this->resolveCurrentPeriodKey($state);
+        foreach (($state['world']['semiannual_challenges'] ?? []) as $challenge) {
+            if (($challenge['period'] ?? '') !== $period) {
+                continue;
+            }
+            $state['world']['chapter'] = (string) ($challenge['title'] ?? $state['world']['chapter']);
+            $state['world']['objective'] = (string) ($challenge['objective'] ?? $state['world']['objective']);
+            break;
+        }
+
+        return $state;
+    }
+
+    private function resolveCurrentPeriodKey(array $state): string
+    {
+        $start = (string) ($state['world']['calendar_start'] ?? '2026-01-01');
+        try {
+            $startDate = new \DateTimeImmutable($start, new \DateTimeZone('UTC'));
+        } catch (\Throwable) {
+            $startDate = new \DateTimeImmutable('2026-01-01', new \DateTimeZone('UTC'));
+        }
+
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $days = max(0, (int) $startDate->diff($now)->format('%a'));
+        $slot = intdiv($days, 182);
+        $year = 2026 + intdiv($slot, 2);
+        $half = ($slot % 2) === 0 ? 'H1' : 'H2';
+
+        return sprintf('%d-%s', $year, $half);
     }
 
     private function resolveWorldTurn(array $state): array

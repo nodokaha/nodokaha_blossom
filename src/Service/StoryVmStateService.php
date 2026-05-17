@@ -35,9 +35,17 @@ class StoryVmStateService
     private function defaultWorld(): array
     {
         return [
+            'calendar_start' => '2026-01-01',
             'day' => 1,
             'chapter' => 'CHAPTER 1: 花畑の起動',
             'objective' => '光と水の変数を整えて、開花率を20%以上にする',
+            'semiannual_challenges' => [
+                [
+                    'period' => '2026-H1',
+                    'title' => 'CHAPTER 1: 花畑の起動',
+                    'objective' => '光と水の変数を整えて、開花率を20%以上にする',
+                ],
+            ],
             'biome' => [
                 'weather' => 'mist',
                 'bloom_rate' => 0,
