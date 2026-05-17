@@ -5,7 +5,8 @@
 {% block body %}
     <main style="max-width: 900px; margin: 2rem auto; padding: 1rem;">
         <h1>みんなの箱庭一覧</h1>
-        <p>他ユーザーが作成した箱庭を一覧で観察できます。</p>
+        <p>他ユーザーが作成した箱庭を一覧で観察できます。VMのオンライン干渉値も反映されます。</p>
+        <p style='font-size:0.9rem;color:#666;'>グローバル同期: {{ network.global_sync|default(0) }}</p>
 
         {% if gardens is empty %}
             <p>まだ箱庭は作成されていません。</p>
@@ -15,7 +16,11 @@
                     <li style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem;">
                         <h2 style="margin-top: 0;">{{ garden.name }}</h2>
                         <p>{{ garden.description }}</p>
+                        {% set ownerKey = garden.owner.email|lower %}
+                        {% set targeted = network.garden_influence[ownerKey]|default(0) %}
+                        {% set shared = network.garden_influence['all']|default(0) %}
                         <p style="font-size: 0.9rem; color: #666; margin-bottom: 0;">オーナー: {{ garden.owner.email }}</p>
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-top: 0.3rem;">オンライン干渉: {{ targeted + shared }} (target {{ targeted }}, all {{ shared }})</p>
                     </li>
                 {% endfor %}
             </ul>

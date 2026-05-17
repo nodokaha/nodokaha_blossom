@@ -52,6 +52,10 @@ class StoryVmStateService
                 'tiles' => [],
             ],
             'chronicle' => [],
+            'network' => [
+                'global_sync' => 0,
+                'garden_influence' => [],
+            ],
         ];
     }
 }

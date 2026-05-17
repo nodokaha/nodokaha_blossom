@@ -15,14 +15,15 @@
 <div class="kpi"><strong>Bloom Rate</strong><div>{{ state.world.biome.bloom_rate }}%</div></div>
 <div class="kpi"><strong>Weather</strong><div>{{ state.world.biome.weather }}</div></div>
 <div class="kpi"><strong>Caretaker AI</strong><div>{{ state.world.npcs.caretaker_ai }}</div></div>
+<div class="kpi"><strong>Global Sync</strong><div>{{ state.world.network.global_sync|default(0) }}</div></div>
 </div>
 </div>
 <div class="panel">
 <h2>命令を積む</h2>
 <form method="post">
 <input type="hidden" name="action" value="add_instruction">
-<input name="opcode" placeholder="opcode (e.g. LDC)" required>
-<input name="args" placeholder="args (e.g. 10 / x / 4,8)">
+<input name="opcode" placeholder="opcode (e.g. LDC / INFLUENCE / BROADCAST)" required>
+<input name="args" placeholder="args (e.g. 10 / x / all,2 / user@example.com,1)">
 <button type="submit">追加</button>
 </form>
 </div>
