@@ -18,7 +18,7 @@ class StoryVmServiceTest extends TestCase
     {
         $result = $this->service->runProgram([]);
 
-        $this->assertEquals(['stack' => [], 'env' => [], 'dump' => [], 'trace' => []], $result);
+        $this->assertEquals(['stack' => [], 'env' => [], 'dump' => [], 'trace' => [], 'network_signals' => []], $result);
     }
 
     public function testRunProgramWithLdc(): void
@@ -65,12 +65,26 @@ class StoryVmServiceTest extends TestCase
         $program = [
             ['opcode' => 'LDC', 'args' => '1'],
             ['opcode' => 'STOP', 'args' => ''],
-            ['opcode' => 'LDC', 'args' => '2'], // This should not execute
+            ['opcode' => 'LDC', 'args' => '2'],
         ];
 
         $result = $this->service->runProgram($program);
 
         $this->assertEquals([1.0], $result['stack']);
-        $this->assertCount(2, $result['trace']); // Only first two instructions
+        $this->assertCount(2, $result['trace']);
+    }
+
+    public function testRunProgramWithOnlineInfluenceOpcodes(): void
+    {
+        $program = [
+            ['opcode' => 'BROADCAST', 'args' => 'pollination,2'],
+            ['opcode' => 'INFLUENCE', 'args' => 'alice@example.com,3'],
+        ];
+
+        $result = $this->service->runProgram($program);
+
+        $this->assertCount(2, $result['network_signals']);
+        $this->assertSame('broadcast', $result['network_signals'][0]['type']);
+        $this->assertSame('target', $result['network_signals'][1]['type']);
     }
 }

@@ -11,6 +11,7 @@ class StoryVmService
         $dump = [];
         $pc = 0;
         $trace = [];
+        $networkSignals = [];
 
         while ($pc < count($program)) {
             $ins = $program[$pc];
@@ -67,6 +68,16 @@ class StoryVmService
                     }
                     $pc = ((int) array_pop($dump)) - 1;
                     break;
+                case 'BROADCAST':
+                    $channel = (string) ($args[0] ?? 'global');
+                    $impact = is_numeric($args[1] ?? null) ? (int) round((float) $args[1]) : 1;
+                    $networkSignals[] = ['type' => 'broadcast', 'channel' => $channel, 'impact' => max(-5, min(5, $impact))];
+                    break;
+                case 'INFLUENCE':
+                    $target = mb_strtolower((string) ($args[0] ?? 'all'));
+                    $impact = is_numeric($args[1] ?? null) ? (int) round((float) $args[1]) : 1;
+                    $networkSignals[] = ['type' => 'target', 'target' => $target, 'impact' => max(-5, min(5, $impact))];
+                    break;
                 case 'STOP':
                     $pc = count($program);
                     break;
@@ -78,6 +89,6 @@ class StoryVmService
             $pc++;
         }
 
-        return ['stack' => $stack, 'env' => $env, 'dump' => $dump, 'trace' => $trace];
+        return ['stack' => $stack, 'env' => $env, 'dump' => $dump, 'trace' => $trace, 'network_signals' => $networkSignals];
     }
 }

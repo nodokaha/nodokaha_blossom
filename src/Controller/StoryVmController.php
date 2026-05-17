@@ -33,6 +33,7 @@ final class StoryVmController extends AbstractController
             'machine_model' => 'SECD派生（Stack / Environment / Control / Dump）',
             'tick_interval' => '毎日 04:00 UTC にターン解決',
             'max_instruction_per_day' => '1命令 / ユーザー識別子',
+            'online_interference' => 'INFLUENCE/BROADCASTで他ユーザー箱庭へ干渉',
             'instruction_timeout' => '命令は蓄積可能、実行は任意タイミング',
             'failure_policy' => '不正命令は No-Op として記録',
         ];
@@ -47,6 +48,8 @@ final class StoryVmController extends AbstractController
             ['opcode' => 'DIV', 'args' => '-', 'effect' => 'Stackの2値で除算してpush（0除算はNo-Op）'],
             ['opcode' => 'SEL', 'args' => 'then_label, else_label', 'effect' => '条件分岐（0ならelse）'],
             ['opcode' => 'JOIN', 'args' => '-', 'effect' => 'Dumpから制御復帰'],
+            ['opcode' => 'BROADCAST', 'args' => 'channel, impact', 'effect' => '全体同期値へ加算し、全箱庭に波及'],
+            ['opcode' => 'INFLUENCE', 'args' => 'target_email_or_all, impact', 'effect' => '対象ユーザー箱庭へ影響を蓄積'],
             ['opcode' => 'STOP', 'args' => '-', 'effect' => '実行停止'],
         ];
 
@@ -145,14 +148,38 @@ final class StoryVmController extends AbstractController
         $world['biome']['energy'] = max(0, min(20, (int) ($world['biome']['energy'] ?? 0) + (int) round(($light - $water) / 2)));
         $world['biome']['weather'] = $world['biome']['energy'] > 8 ? 'sunny' : ($world['biome']['energy'] < 3 ? 'rain' : 'mist');
         $world['npcs']['caretaker_ai'] = $world['biome']['bloom_rate'] >= 20 ? '開花同期モード' : '巡回補助モード';
+
+        $network = is_array($world['network'] ?? null) ? $world['network'] : ['global_sync' => 0, 'garden_influence' => []];
+        $network['global_sync'] = (int) ($network['global_sync'] ?? 0);
+        $network['garden_influence'] = is_array($network['garden_influence'] ?? null) ? $network['garden_influence'] : [];
+
+        foreach (($state['run_result']['network_signals'] ?? []) as $signal) {
+            if (($signal['type'] ?? '') === 'broadcast') {
+                $network['global_sync'] = max(-100, min(100, $network['global_sync'] + (int) ($signal['impact'] ?? 0)));
+                continue;
+            }
+
+            if (($signal['type'] ?? '') === 'target') {
+                $target = (string) ($signal['target'] ?? 'all');
+                $impact = (int) ($signal['impact'] ?? 0);
+                if ($target === 'all') {
+                    $network['garden_influence']['all'] = (int) ($network['garden_influence']['all'] ?? 0) + $impact;
+                } else {
+                    $network['garden_influence'][$target] = (int) ($network['garden_influence'][$target] ?? 0) + $impact;
+                }
+            }
+        }
+
+        $world['network'] = $network;
         $world['field'] = $this->buildField($world, $env);
 
         $world['chronicle'][] = sprintf(
-            'Day %d 解決: bloom=%d%%, weather=%s, caretaker=%s',
+            'Day %d 解決: bloom=%d%%, weather=%s, caretaker=%s, sync=%d',
             $world['day'],
             $world['biome']['bloom_rate'],
             $world['biome']['weather'],
-            $world['npcs']['caretaker_ai']
+            $world['npcs']['caretaker_ai'],
+            (int) ($world['network']['global_sync'] ?? 0)
         );
 
         $world['chronicle'] = array_slice($world['chronicle'], -10);
