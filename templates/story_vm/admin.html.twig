@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}VM 運営管理{% endblock %}
+{% block body %}
+<main style="max-width:900px;margin:2rem auto;padding:1rem;">
+    <h1>半年課題 管理画面</h1>
+    <p>現在の自動適用期間: <strong>{{ active_period }}</strong></p>
+    {% if message %}<p style="padding:8px;border:1px solid #ccc;">{{ message }}</p>{% endif %}
+
+    <section style="border:1px solid #ddd;padding:1rem;border-radius:8px;">
+        <h2>半年課題を登録 / 更新</h2>
+        <form method="post" style="display:grid;gap:8px;">
+            <input name="period" placeholder="period (例: 2026-H2)" required>
+            <input name="title" placeholder="chapter title" required>
+            <input name="objective" placeholder="objective" required>
+            <button type="submit">保存</button>
+        </form>
+    </section>
+
+    <section style="margin-top:1rem;border:1px solid #ddd;padding:1rem;border-radius:8px;">
+        <h2>登録済み半年課題</h2>
+        <table style="width:100%;border-collapse:collapse;">
+            <thead><tr><th style="text-align:left;">Period</th><th style="text-align:left;">Title</th><th style="text-align:left;">Objective</th></tr></thead>
+            <tbody>
+            {% for c in state.world.semiannual_challenges|default([]) %}
+                <tr>
+                    <td>{{ c.period }}</td>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.objective }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3">未登録</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

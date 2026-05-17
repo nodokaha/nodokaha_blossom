@@ -4,7 +4,9 @@
 <style>body{background:#0b1020;color:#e5e7eb;font-family:system-ui}.wrap{max-width:1100px;margin:0 auto;padding:24px}.panel{border:1px solid #334155;border-radius:10px;padding:14px;margin:12px 0;background:#111827}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #334155;padding:6px;text-align:left}code{color:#67e8f9}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.kpi{padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}.log{font-size:.9rem;color:#cbd5e1}.field{display:grid;gap:3px;margin-top:12px}.tile{width:24px;height:24px;border-radius:4px;border:1px solid #1f2937}.tile-soil{background:#7c4a2b}.tile-water{background:#2563eb}.tile-rock{background:#6b7280}.growth-seed{box-shadow:inset 0 0 0 2px #f59e0b}.growth-sprout{box-shadow:inset 0 0 0 2px #22c55e}.growth-bloom{box-shadow:inset 0 0 0 2px #f472b6}.growth-pond{box-shadow:inset 0 0 0 2px #38bdf8}.growth-moss{box-shadow:inset 0 0 0 2px #86efac}</style>
 <main class="wrap">
 <h1>SECDベース VMラボ（オンライン箱庭）</h1>
-<p>UTC今日: {{ today }} / 1日1命令を追加可能</p>
+<p>UTC今日: {{ today }} / 残り命令トークン: <strong>{{ remaining_token }}</strong>（1日1命令）</p>
+<p>有効Opcode: {{ allowed_opcodes|join(', ') }}</p>
+<p><a href="{{ path('story_vm_admin') }}">運営管理画面（半年課題）へ</a></p>
 {% if message %}<div class="panel">{{ message }}</div>{% endif %}
 <div class="panel">
 <h2>ワールド進行ステータス</h2>
