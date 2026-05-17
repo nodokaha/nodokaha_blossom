@@ -116,6 +116,9 @@ final class StoryVmController extends AbstractController
         }
 
         $punchcards = glob(__DIR__.'/../../data/punchcards/*.json') ?: [];
+        if (empty($state['world']['field']['tiles'])) {
+            $state['world']['field'] = $this->buildField($state['world'], $state['run_result']['env'] ?? []);
+        }
 
         $response = $this->render('story_vm/lab.html.twig', [
             'state' => $state,
@@ -142,6 +145,7 @@ final class StoryVmController extends AbstractController
         $world['biome']['energy'] = max(0, min(20, (int) ($world['biome']['energy'] ?? 0) + (int) round(($light - $water) / 2)));
         $world['biome']['weather'] = $world['biome']['energy'] > 8 ? 'sunny' : ($world['biome']['energy'] < 3 ? 'rain' : 'mist');
         $world['npcs']['caretaker_ai'] = $world['biome']['bloom_rate'] >= 20 ? '開花同期モード' : '巡回補助モード';
+        $world['field'] = $this->buildField($world, $env);
 
         $world['chronicle'][] = sprintf(
             'Day %d 解決: bloom=%d%%, weather=%s, caretaker=%s',
@@ -155,5 +159,60 @@ final class StoryVmController extends AbstractController
         $state['world'] = $world;
 
         return $state;
+    }
+
+    private function buildField(array $world, array $env): array
+    {
+        $width = max(4, (int) ($world['field']['width'] ?? 12));
+        $height = max(4, (int) ($world['field']['height'] ?? 8));
+        $bloomRate = (int) ($world['biome']['bloom_rate'] ?? 0);
+        $energy = (int) ($world['biome']['energy'] ?? 0);
+        $light = (float) ($env['light'] ?? 0);
+        $water = (float) ($env['water'] ?? 0);
+        $day = (int) ($world['day'] ?? 1);
+        $seed = max(1, $day + $bloomRate + ($energy * 3));
+
+        $tiles = [];
+        for ($y = 0; $y < $height; $y++) {
+            $row = [];
+            for ($x = 0; $x < $width; $x++) {
+                $noise = ($x * 17 + $y * 31 + $seed * 13) % 100;
+                $moisture = ($water * 10) + (($x + $y + $day) % 5) * 4;
+                $sun = ($light * 10) + (($x * 2 + $y) % 7) * 3;
+
+                $terrain = 'soil';
+                if ($noise < 10 && $moisture > $sun) {
+                    $terrain = 'water';
+                } elseif ($noise > 80 && $sun > $moisture) {
+                    $terrain = 'rock';
+                }
+
+                $growthScore = $bloomRate + $sun + $moisture - abs($sun - $moisture);
+                $growth = 'seed';
+                if ($terrain === 'water') {
+                    $growth = 'pond';
+                } elseif ($terrain === 'rock') {
+                    $growth = 'moss';
+                } elseif ($growthScore > 110) {
+                    $growth = 'bloom';
+                } elseif ($growthScore > 80) {
+                    $growth = 'sprout';
+                }
+
+                $row[] = [
+                    'x' => $x,
+                    'y' => $y,
+                    'terrain' => $terrain,
+                    'growth' => $growth,
+                ];
+            }
+            $tiles[] = $row;
+        }
+
+        return [
+            'width' => $width,
+            'height' => $height,
+            'tiles' => $tiles,
+        ];
     }
 }
