@@ -141,7 +141,7 @@ final class StoryVmController extends AbstractController
         return $response;
     }
 
-    #[Route('/vm-admin', name: 'story_vm_admin', methods: ['GET', 'POST'])]
+    #[Route('/admin/vm', name: 'story_vm_admin', methods: ['GET', 'POST'])]
     public function admin(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
