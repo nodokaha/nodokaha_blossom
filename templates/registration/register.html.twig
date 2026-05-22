@@ -107,12 +107,6 @@
                 <p class="register-alert">{{ message }}</p>
             {% endif %}
 
-            {% if login_url %}
-                <p class="register-alert register-success">
-                    アカウント作成後は <a href="{{ login_url }}">ログイン</a> してください。
-                </p>
-            {% endif %}
-
             <div class="register-links">
                 <a class="register-link" href="{{ path('story_vm_home') }}">トップへ戻る</a>
                 <a class="register-link" href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a>

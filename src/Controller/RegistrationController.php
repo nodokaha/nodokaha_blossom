@@ -22,8 +22,6 @@ final class RegistrationController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
     ): Response {
         $message = null;
-        $dashboardUrl = null;
-        $loginUrl = null;
 
         if ($request->isMethod('POST')) {
             $email = mb_strtolower(trim((string) $request->request->get('email')));
@@ -51,16 +49,14 @@ final class RegistrationController extends AbstractController
                 $entityManager->persist($garden);
                 $entityManager->flush();
 
-                $dashboardUrl = $this->generateUrl('app_garden_dashboard', ['userId' => $user->getId()]);
-                $loginUrl = $this->generateUrl('app_login');
-                $message = 'ユーザーを作成しました。ログインして箱庭を確認してください。';
+                $this->addFlash('success', 'ユーザーを作成しました。ログインしてください。');
+
+                return $this->redirectToRoute('app_login');
             }
         }
 
         return $this->render('registration/register.html.twig', [
             'message' => $message,
-            'dashboard_url' => $dashboardUrl,
-            'login_url' => $loginUrl,
         ]);
     }
 }
