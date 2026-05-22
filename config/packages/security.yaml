@@ -25,6 +25,7 @@ security:
                 target: story_vm_home
 
     access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/my-garden, roles: ROLE_USER }
 
 when@test:
