@@ -1,7 +1,33 @@
 {% extends 'base.html.twig' %}
 {% block title %}SECD VM Lab{% endblock %}
 {% block body %}
-<style>body{background:#0b1020;color:#e5e7eb;font-family:system-ui}.wrap{max-width:1100px;margin:0 auto;padding:24px}.panel{border:1px solid #334155;border-radius:10px;padding:14px;margin:12px 0;background:#111827}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #334155;padding:6px;text-align:left}code{color:#67e8f9}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.kpi{padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}.log{font-size:.9rem;color:#cbd5e1}.field{display:grid;gap:3px;margin-top:12px}.tile{width:24px;height:24px;border-radius:4px;border:1px solid #1f2937}.tile-soil{background:#7c4a2b}.tile-water{background:#2563eb}.tile-rock{background:#6b7280}.growth-seed{box-shadow:inset 0 0 0 2px #f59e0b}.growth-sprout{box-shadow:inset 0 0 0 2px #22c55e}.growth-bloom{box-shadow:inset 0 0 0 2px #f472b6}.growth-pond{box-shadow:inset 0 0 0 2px #38bdf8}.growth-moss{box-shadow:inset 0 0 0 2px #86efac}</style>
+<style>
+body{background:#0b1020;color:#e5e7eb;font-family:system-ui}
+.wrap{max-width:1100px;margin:0 auto;padding:24px}
+.panel{border:1px solid #334155;border-radius:10px;padding:14px;margin:12px 0;background:#111827}
+table{width:100%;border-collapse:collapse}
+td,th{border-bottom:1px solid #334155;padding:6px;text-align:left}
+code{color:#67e8f9}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.kpi{padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}
+.log{font-size:.9rem;color:#cbd5e1}
+.field{display:grid;gap:6px;margin-top:12px}
+.tile{width:32px;height:32px;border-radius:8px;border:1px solid #1f2937;display:flex;align-items:center;justify-content:center;background:#0b1228;cursor:pointer;transition:.15s transform,.15s border-color,.15s box-shadow}
+.tile:hover,.tile:focus-visible{transform:translateY(-1px);border-color:#93c5fd;box-shadow:0 6px 14px rgba(15,23,42,.35)}
+.tile.active{border-color:#fde68a;box-shadow:0 0 0 2px rgba(250,204,21,.5)}
+.tile svg{width:20px;height:20px;display:block}
+.tile-soil{background:linear-gradient(160deg,#45210e,#7c4a2b)}
+.tile-water{background:linear-gradient(160deg,#1e3a8a,#2563eb)}
+.tile-rock{background:linear-gradient(160deg,#374151,#6b7280)}
+.growth-seed .growth-ring{fill:#f59e0b}
+.growth-sprout .growth-ring{fill:#22c55e}
+.growth-bloom .growth-ring{fill:#f472b6}
+.growth-pond .growth-ring{fill:#38bdf8}
+.growth-moss .growth-ring{fill:#86efac}
+.tile-icon{fill:#f8fafc;opacity:.95}
+.tile-hud{margin-top:12px;padding:10px;border-radius:8px;background:#0f172a;border:1px solid #334155;min-height:64px}
+.tile-hud strong{color:#93c5fd}
+</style>
 <main class="wrap">
 <h1>SECDベース VMラボ（オンライン箱庭）</h1>
 <p>UTC今日: {{ today }} / 残り命令トークン: <strong>{{ remaining_token }}</strong>（1日1命令）</p>
@@ -52,14 +78,26 @@
 </div>
 <div class="panel">
 <h2>箱庭フィールド（タイルマップ）</h2>
-<p>VMの実行結果（light / water）と開花率から毎ターン再生成されるフィールドです。</p>
-<div class="field" style="grid-template-columns:repeat({{ state.world.field.width }},24px);">
+<p>SVGアイコンのタイルをホバー / クリックすると、座標・地形・成長段階をインタラクティブ表示します。</p>
+<div class="field" id="field-grid" style="grid-template-columns:repeat({{ state.world.field.width }},32px);">
 {% for row in state.world.field.tiles %}
     {% for tile in row %}
-    <div class="tile tile-{{ tile.terrain }} growth-{{ tile.growth }}" title="({{ tile.x }},{{ tile.y }}) {{ tile.terrain }} / {{ tile.growth }}"></div>
+    <button type="button" class="tile tile-{{ tile.terrain }} growth-{{ tile.growth }}" data-x="{{ tile.x }}" data-y="{{ tile.y }}" data-terrain="{{ tile.terrain }}" data-growth="{{ tile.growth }}" aria-label="{{ tile.x }},{{ tile.y }} {{ tile.terrain }} {{ tile.growth }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle class="growth-ring" cx="18" cy="6" r="4"></circle>
+            {% if tile.terrain == 'soil' %}
+                <path class="tile-icon" d="M6 18c2-4 4-6 6-6s4 2 6 6H6zm5-11h2v7h-2z"></path>
+            {% elseif tile.terrain == 'water' %}
+                <path class="tile-icon" d="M12 4c2 3 5 6 5 9a5 5 0 1 1-10 0c0-3 3-6 5-9z"></path>
+            {% else %}
+                <path class="tile-icon" d="M4 16l5-8 4 5 3-3 4 6H4z"></path>
+            {% endif %}
+        </svg>
+    </button>
     {% endfor %}
 {% endfor %}
 </div>
+<div id="tile-hud" class="tile-hud" aria-live="polite">タイルにホバーすると情報が表示されます。</div>
 </div>
 <div class="panel">
 <h2>メモリ状況（S / E / D）</h2>
@@ -74,4 +112,23 @@
 {% else %}<p>まだ実行していません。</p>{% endif %}
 </div>
 </main>
+<script>
+(() => {
+  const hud = document.getElementById('tile-hud');
+  const tiles = document.querySelectorAll('#field-grid .tile');
+  const render = (el) => {
+    hud.innerHTML = `<strong>Tile (${el.dataset.x}, ${el.dataset.y})</strong><br>Terrain: ${el.dataset.terrain}<br>Growth: ${el.dataset.growth}`;
+  };
+
+  tiles.forEach((tile) => {
+    tile.addEventListener('mouseenter', () => render(tile));
+    tile.addEventListener('focus', () => render(tile));
+    tile.addEventListener('click', () => {
+      document.querySelectorAll('#field-grid .tile.active').forEach((active) => active.classList.remove('active'));
+      tile.classList.add('active');
+      render(tile);
+    });
+  });
+})();
+</script>
 {% endblock %}
