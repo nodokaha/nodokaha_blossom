@@ -36,7 +36,7 @@ final class GardenController extends AbstractController
     }
 
     #[Route('/my-garden/{userId}', name: 'app_garden_dashboard', methods: ['GET'])]
-    public function dashboard(int $userId, GardenRepository $gardenRepository): Response
+    public function dashboard(int $userId, GardenRepository $gardenRepository, StoryVmStateService $storyVmStateService, GardenBalanceService $gardenBalanceService): Response
     {
         $currentUser = $this->getUser();
 
@@ -48,9 +48,23 @@ final class GardenController extends AbstractController
             throw $this->createAccessDeniedException('この箱庭にはアクセスできません。');
         }
 
+        $state = $storyVmStateService->loadState();
+        $network = is_array($state['world']['network'] ?? null) ? $state['world']['network'] : [];
+        $ownerKey = strtolower($currentUser->getEmail() ?? '');
+        $targeted = (float) ($network['garden_influence'][$ownerKey] ?? 0);
+        $shared = (float) ($network['garden_influence']['all'] ?? 0);
+
+        $gardens = $gardenRepository->findByOwnerId($userId);
+        $primaryGarden = $gardens[0] ?? null;
+        $status = $primaryGarden ? $gardenBalanceService->calculateStatus($primaryGarden, $targeted + $shared) : null;
+
         return $this->render('garden/dashboard.html.twig', [
             'owner' => $currentUser,
-            'gardens' => $gardenRepository->findByOwnerId($userId),
+            'gardens' => $gardens,
+            'state' => $state,
+            'status' => $status,
+            'network_targeted' => $targeted,
+            'network_shared' => $shared,
         ]);
     }
 }

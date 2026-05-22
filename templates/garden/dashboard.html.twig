@@ -3,21 +3,82 @@
 {% block title %}{{ owner.email }}さんの箱庭{% endblock %}
 
 {% block body %}
-    <main style="max-width: 720px; margin: 2rem auto; padding: 1rem;">
+    <style>
+        .garden-wrap{max-width:1100px;margin:1.5rem auto;padding:1rem;color:#e5e7eb;background:#0b1020;border-radius:16px}
+        .panel{background:#111827;border:1px solid #334155;border-radius:12px;padding:1rem;margin-bottom:1rem}
+        .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem}
+        .kpi{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:.7rem}
+        .field{display:grid;gap:6px}
+        .tile{width:32px;height:32px;border-radius:8px;border:1px solid #1f2937;display:flex;align-items:center;justify-content:center;background:#0b1228}
+        .tile-soil{background:linear-gradient(160deg,#45210e,#7c4a2b)}
+        .tile-water{background:linear-gradient(160deg,#1e3a8a,#2563eb)}
+        .tile-rock{background:linear-gradient(160deg,#374151,#6b7280)}
+        .growth-seed{box-shadow:inset 0 0 0 2px rgba(245,158,11,.6)}
+        .growth-sprout{box-shadow:inset 0 0 0 2px rgba(34,197,94,.6)}
+        .growth-bloom{box-shadow:inset 0 0 0 2px rgba(244,114,182,.7)}
+        .growth-pond{box-shadow:inset 0 0 0 2px rgba(56,189,248,.7)}
+        .growth-moss{box-shadow:inset 0 0 0 2px rgba(134,239,172,.7)}
+        .stack{display:flex;gap:.5rem;flex-wrap:wrap}
+        .stack-tile{background:#1f2937;border:1px solid #475569;border-radius:8px;padding:.4rem .6rem;font-size:.85rem}
+    </style>
+    <main class="garden-wrap">
         <h1>{{ owner.email }}さん専用の箱庭管理画面</h1>
-        <p>この画面で作成済みの箱庭を観察できます。</p>
+        <p>ラボ情報を統合し、スタックも「成長タイル」として可視化しています。</p>
 
-        {% if gardens is empty %}
-            <p>箱庭がありません。</p>
-        {% else %}
-            {% for garden in gardens %}
-                <article style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                    <h2 style="margin-top: 0;">{{ garden.name }}</h2>
-                    <p>{{ garden.description }}</p>
-                </article>
-            {% endfor %}
-        {% endif %}
+        <section class="panel">
+            <h2>箱庭の成長ステータス</h2>
+            <div class="kpis">
+                <div class="kpi"><strong>Day</strong><div>{{ state.world.day }}</div></div>
+                <div class="kpi"><strong>開花率</strong><div>{{ state.world.biome.bloom_rate }}%</div></div>
+                <div class="kpi"><strong>天候</strong><div>{{ state.world.biome.weather }}</div></div>
+                <div class="kpi"><strong>同期干渉</strong><div>{{ network_targeted + network_shared }} (target {{ network_targeted }}, all {{ network_shared }})</div></div>
+                {% if status %}
+                    <div class="kpi"><strong>発展段階</strong><div>{{ status.prosperity }}</div></div>
+                    <div class="kpi"><strong>状態</strong><div>{{ status.danger }}</div></div>
+                {% endif %}
+            </div>
+        </section>
 
-        <p><a href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a></p>
+        <section class="panel">
+            <h2>箱庭タイル（Lab統合ビュー）</h2>
+            <div class="field" style="grid-template-columns:repeat({{ state.world.field.width }},32px);">
+                {% for row in state.world.field.tiles %}
+                    {% for tile in row %}
+                        <div class="tile tile-{{ tile.terrain }} growth-{{ tile.growth }}" title="({{ tile.x }},{{ tile.y }}) {{ tile.terrain }} / {{ tile.growth }}"></div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>スタック成長タイル</h2>
+            <p>実行スタックをタイル化し、積み上げた命令の成果として表示します。</p>
+            {% set stack = state.run_result.stack|default([]) %}
+            {% if stack is empty %}
+                <p>まだスタックがありません。ラボで命令を実行すると育成タイルが増えます。</p>
+            {% else %}
+                <div class="stack">
+                    {% for value in stack %}
+                        <div class="stack-tile">Stack {{ loop.index }}: {{ value }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>作成済み箱庭</h2>
+            {% if gardens is empty %}
+                <p>箱庭がありません。</p>
+            {% else %}
+                {% for garden in gardens %}
+                    <article>
+                        <h3>{{ garden.name }}</h3>
+                        <p>{{ garden.description }}</p>
+                    </article>
+                {% endfor %}
+            {% endif %}
+        </section>
+
+        <p><a href="{{ path('story_vm_lab') }}">詳細な命令編集はVMラボへ</a> / <a href="{{ path('app_garden_list') }}">みんなの箱庭一覧へ</a></p>
     </main>
 {% endblock %}
