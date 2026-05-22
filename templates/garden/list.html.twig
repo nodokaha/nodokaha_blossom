@@ -20,7 +20,12 @@
                         {% set targeted = network.garden_influence[ownerKey]|default(0) %}
                         {% set shared = network.garden_influence['all']|default(0) %}
                         <p style="font-size: 0.9rem; color: #666; margin-bottom: 0;">オーナー: {{ garden.owner.email }}</p>
+                        {% set status = statuses[garden.id]|default(null) %}
                         <p style="font-size: 0.9rem; color: #4b5563; margin-top: 0.3rem;">オンライン干渉: {{ targeted + shared }} (target {{ targeted }}, all {{ shared }})</p>
+                        {% if status %}
+                            <p style="font-size: 0.9rem; color: #374151; margin: 0.35rem 0 0;">人口 {{ status.population }}人 / 食料 {{ status.food }}t / 資金 {{ status.treasury }}億円</p>
+                            <p style="font-size: 0.9rem; color: #374151; margin: 0.2rem 0 0;">発展段階: {{ status.prosperity }} ・ 状態: {{ status.danger }}</p>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
