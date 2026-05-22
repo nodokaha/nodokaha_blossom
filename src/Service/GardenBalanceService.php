@@ -15,7 +15,7 @@ final class GardenBalanceService
         $descriptionPower = mb_strlen($garden->getDescription());
 
         $basePopulation = 2200 + ($namePower * 90) + ($descriptionPower * 35);
-        $population = (int) round($basePopulation * (1 + ($interference * 0.02)));
+        $population = max(0, (int) round($basePopulation * (1 + ($interference * 0.02))));
 
         $food = max(0, (int) round(($population * 0.72) - (350 + ($interference * 40))));
         $treasury = max(0, (int) round(($population * 0.65) + ($food * 0.25) - ($interference * 120)));

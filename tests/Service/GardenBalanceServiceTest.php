@@ -36,4 +36,17 @@ final class GardenBalanceServiceTest extends TestCase
 
         $this->assertSame('怪獣警報', $status['danger']);
     }
+    public function testVeryLowInterferenceDoesNotProduceNegativePopulation(): void
+    {
+        $garden = (new Garden())
+            ->setOwner((new User())->setEmail('owner@example.com'))
+            ->setName('低干渉島')
+            ->setDescription('干渉が大きく負のケース');
+
+        $service = new GardenBalanceService();
+        $status = $service->calculateStatus($garden, -60);
+
+        $this->assertSame(0, $status['population']);
+    }
+
 }
