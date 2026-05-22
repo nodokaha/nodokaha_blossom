@@ -8,6 +8,7 @@ services:
       - ./:/app
     environment:
       APP_ENV: dev
+      APP_SECRET: ${APP_SECRET:-change-me}
       DATABASE_URL: postgresql://app:app@db:5432/app?serverVersion=16&charset=utf8
     ports:
       - "8000:8000"
