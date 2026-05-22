@@ -18,15 +18,18 @@
                 <a href="{{ path('story_vm_home') }}" style="color: #93c5fd; text-decoration: none;">トップ</a>
                 <a href="{{ path('story_vm_manual') }}" style="color: #93c5fd; text-decoration: none;">VMマニュアル</a>
                 <a href="{{ path('story_vm_lab') }}" style="color: #93c5fd; text-decoration: none;">VMラボ</a>
-                <a href="{{ path('app_register') }}" style="color: #93c5fd; text-decoration: none;">ユーザー登録</a>
-                <a href="{{ path('app_login') }}" style="color: #93c5fd; text-decoration: none;">ログイン</a>
                 <a href="{{ path('app_garden_list') }}" style="color: #93c5fd; text-decoration: none;">箱庭一覧</a>
+
                 {% if app.user %}
+                    <a href="{{ path('app_garden_dashboard', { userId: app.user.id }) }}" style="color: #93c5fd; text-decoration: none;">マイ箱庭</a>
                     <span style="color:#e2e8f0; margin-left:auto;">{{ app.user.userIdentifier }}</span>
                     <form method="post" action="{{ path('app_logout') }}" style="margin:0;">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
                         <button type="submit" style="border:1px solid #64748b; background:transparent; color:#e2e8f0; border-radius:999px; padding:.3rem .75rem;">ログアウト</button>
                     </form>
+                {% else %}
+                    <a href="{{ path('app_register') }}" style="color: #93c5fd; text-decoration: none;">ユーザー登録</a>
+                    <a href="{{ path('app_login') }}" style="color: #93c5fd; text-decoration: none;">ログイン</a>
                 {% endif %}
             </nav>
         </header>

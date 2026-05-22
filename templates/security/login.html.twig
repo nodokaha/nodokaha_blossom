@@ -7,6 +7,12 @@
     <section style="background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; box-shadow: 0 8px 24px rgba(15,23,42,.06);">
         <h1 style="margin-top:0;">ログイン</h1>
 
+        {% for message in app.flashes('success') %}
+            <p style="color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; padding: .7rem; border-radius: 8px;">
+                {{ message }}
+            </p>
+        {% endfor %}
+
         {% if error %}
             <p style="color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: .7rem; border-radius: 8px;">
                 {{ error.messageKey|trans(error.messageData, 'security') }}
