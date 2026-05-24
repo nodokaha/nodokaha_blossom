@@ -18,7 +18,7 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
-                default_target_path: story_vm_home
+                default_target_path: app_garden_list
                 enable_csrf: true
             logout:
                 path: app_logout
