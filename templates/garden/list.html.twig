@@ -5,7 +5,7 @@
 {% block body %}
     <main style="max-width: 900px; margin: 2rem auto; padding: 1rem;">
         <h1>みんなの箱庭一覧</h1>
-        <p>他ユーザーが作成した箱庭を一覧で観察できます。VMのオンライン干渉値も反映されます。</p>
+        <p>他ユーザーが作成した箱庭を一覧で観察できます。</p>
         <p style='font-size:0.9rem;color:#666;'>グローバル同期: {{ network.global_sync|default(0) }}</p>
 
         {% if gardens is empty %}
