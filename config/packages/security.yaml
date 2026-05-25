@@ -22,7 +22,7 @@ security:
                 enable_csrf: true
             logout:
                 path: app_logout
-                target: story_vm_home
+                target: app_home
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
