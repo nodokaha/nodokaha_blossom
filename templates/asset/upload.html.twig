@@ -1,0 +1,11 @@
+{% extends 'basisvr_base.html.twig' %}
+
+{% block title %}Upload Asset{% endblock %}
+
+{% block body %}
+    <h1>Upload Asset</h1>
+    {{ form_start(form) }}
+        {{ form_row(form.asset) }}
+        <button type="submit">アップロード</button>
+    {{ form_end(form) }}
+{% endblock %}
