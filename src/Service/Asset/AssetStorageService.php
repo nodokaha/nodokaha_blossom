@@ -15,7 +15,8 @@ class AssetStorageService
 
     public function store(UploadedFile $uploadedFile): AssetFile
     {
-        $extension = $uploadedFile->guessExtension() ?: 'bin';
+        $originalExtension = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_EXTENSION);
+        $extension = $originalExtension !== '' ? strtolower($originalExtension) : ($uploadedFile->guessExtension() ?: 'bin');
         $storageKey = sprintf('%s.%s', bin2hex(random_bytes(16)), $extension);
 
         $clientMimeType = $uploadedFile->getClientMimeType();
