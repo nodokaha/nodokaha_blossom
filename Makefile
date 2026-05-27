@@ -5,3 +5,5 @@ setup:
 	@docker compose exec -T app php bin/console doctrine:schema:create --no-interaction
 test:
 	@docker compose exec -T app php bin/phpunit
+cache-clear:
+	@docker compose exec -T app php bin/console cache:clear
