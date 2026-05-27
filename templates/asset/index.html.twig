@@ -1,0 +1,23 @@
+{% extends 'basisvr_base.html.twig' %}
+
+{% block title %}Asset CDN{% endblock %}
+
+{% block body %}
+    <h1>Asset CDN</h1>
+    <a href="{{ path('basisvr_asset_upload') }}">アセットをアップロード</a>
+
+    <table>
+        <thead><tr><th>Name</th><th>Size</th><th>CDN URL</th></tr></thead>
+        <tbody>
+        {% for file in files %}
+            <tr>
+                <td>{{ file.originalName }}</td>
+                <td>{{ file.size }} bytes</td>
+                <td><code>{{ absolute_url(path('basisvr_asset_serve', {storageKey: file.storageKey})) }}</code></td>
+            </tr>
+        {% else %}
+            <tr><td colspan="3">ファイルなし</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
