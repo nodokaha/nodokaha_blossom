@@ -1,9 +1,12 @@
 :root {
-    --classic-bg: #efe8da;
-    --classic-surface: #e5ddcd;
-    --classic-border: #8f8a80;
-    --classic-text: #4e4b45;
-    --classic-muted: #6d6a63;
+    --retro-bg: #120c1f;
+    --retro-surface: #251a3d;
+    --retro-border-light: #ffdf6e;
+    --retro-border-dark: #6849b8;
+    --retro-text: #f7f4ff;
+    --retro-muted: #c2b9de;
+    --retro-accent: #6fffe9;
+    --retro-danger: #ff7db8;
 }
 
 * {
@@ -14,10 +17,22 @@
 body {
     margin: 0;
     padding: 0;
-    background: var(--classic-bg);
-    color: var(--classic-text);
-    font-family: "Courier New", Courier, monospace;
-    line-height: 1.55;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 10% 15%, rgba(111, 255, 233, 0.12), transparent 36%),
+        radial-gradient(circle at 85% 5%, rgba(255, 125, 184, 0.14), transparent 25%),
+        repeating-linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.24) 0,
+            rgba(0, 0, 0, 0.24) 2px,
+            rgba(0, 0, 0, 0.08) 2px,
+            rgba(0, 0, 0, 0.08) 4px
+        ),
+        var(--retro-bg);
+    color: var(--retro-text);
+    font-family: "Press Start 2P", "VT323", "Courier New", monospace;
+    line-height: 1.7;
+    image-rendering: pixelated;
 }
 
 header,
@@ -30,35 +45,78 @@ footer,
 .card,
 .panel,
 .container {
-    background: var(--classic-surface);
-    border: 1px solid var(--classic-border);
+    background: var(--retro-surface);
+    border: 3px solid var(--retro-border-dark);
+    box-shadow: 0 0 0 3px var(--retro-border-light), 0 12px 0 rgba(0, 0, 0, 0.35);
+}
+
+.retro-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 0;
+}
+
+.retro-nav {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+}
+
+.retro-user {
+    margin-left: auto;
+    color: var(--retro-accent);
+    text-shadow: 2px 2px 0 #000;
+}
+
+.retro-logout-form {
+    margin: 0;
+}
+
+.brand-link {
+    font-weight: 700;
+    margin-right: 0.75rem;
+    color: var(--retro-accent);
 }
 
 a {
-    color: var(--classic-text);
-    text-decoration: underline;
+    color: var(--retro-text);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    text-shadow: 2px 2px 0 #000;
 }
 
 a:hover,
 a:focus-visible {
-    background: #d8d0c1;
+    color: var(--retro-accent);
+    border-bottom-color: var(--retro-accent);
 }
 
 button,
 input,
 select,
 textarea {
-    background: var(--classic-bg);
-    color: var(--classic-text);
-    border: 1px solid var(--classic-border);
+    background: #150f24;
+    color: var(--retro-text);
+    border: 3px solid var(--retro-border-light);
     font-family: inherit;
     padding: 0.45rem 0.7rem;
 }
 
 button {
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     cursor: pointer;
+}
+
+button:hover,
+button:focus-visible {
+    background: var(--retro-accent);
+    color: #1b1130;
 }
 
 h1,
@@ -67,18 +125,19 @@ h3,
 h4,
 h5,
 h6 {
-    color: var(--classic-text);
+    color: var(--retro-accent);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    text-shadow: 2px 2px 0 #000;
 }
 
 hr {
     border: 0;
-    border-top: 1px solid var(--classic-border);
+    border-top: 3px dashed var(--retro-border-light);
 }
 
 small,
 .text-muted {
-    color: var(--classic-muted);
+    color: var(--retro-muted);
 }

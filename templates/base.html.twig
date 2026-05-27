@@ -12,22 +12,22 @@
         {% endblock %}
     </head>
     <body>
-        <header style="position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #8f8a80;">
-            <nav style="max-width: 960px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;">
-                <a href="{{ path('app_home') }}" style="font-weight: 700; text-decoration: none; margin-right: 0.75rem;">NODOKAHA BLOSSOM</a>
-                <a href="{{ path('app_home') }}" style="text-decoration: none;">トップ</a>
-                <a href="{{ path('app_garden_list') }}" style="text-decoration: none;">箱庭一覧</a>
+        <header class="retro-header">
+            <nav class="retro-nav">
+                <a href="{{ path('app_home') }}" class="brand-link">NODOKAHA BLOSSOM</a>
+                <a href="{{ path('app_home') }}">トップ</a>
+                <a href="{{ path('app_garden_list') }}">箱庭一覧</a>
 
                 {% if app.user %}
-                    <a href="{{ path('app_garden_dashboard', { userId: app.user.id }) }}" style="text-decoration: none;">マイ箱庭</a>
-                    <span style="margin-left:auto;">{{ app.user.userIdentifier }}</span>
-                    <form method="post" action="{{ path('app_logout') }}" style="margin:0;">
+                    <a href="{{ path('app_garden_dashboard', { userId: app.user.id }) }}">マイ箱庭</a>
+                    <span class="retro-user">{{ app.user.userIdentifier }}</span>
+                    <form method="post" action="{{ path('app_logout') }}" class="retro-logout-form">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                        <button type="submit" style="padding:.3rem .75rem;">ログアウト</button>
+                        <button type="submit">ログアウト</button>
                     </form>
                 {% else %}
-                    <a href="{{ path('app_register') }}" style="text-decoration: none;">ユーザー登録</a>
-                    <a href="{{ path('app_login') }}" style="text-decoration: none;">ログイン</a>
+                    <a href="{{ path('app_register') }}">ユーザー登録</a>
+                    <a href="{{ path('app_login') }}">ログイン</a>
                 {% endif %}
             </nav>
         </header>
