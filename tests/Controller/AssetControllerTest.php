@@ -50,7 +50,7 @@ final class AssetControllerTest extends WebTestCase
         $uploadedFile = new UploadedFile($tmp, 'test.gif', 'image/gif', null, true);
 
         $crawler = $client->request('GET', '/basisvr/cdn/upload');
-        $form = $crawler->selectButton('アップロード')->form();
+        $form = $crawler->selectButton('upload')->form();
         $form['asset_upload[asset]']->upload($uploadedFile);
 
         $client->submit($form);
