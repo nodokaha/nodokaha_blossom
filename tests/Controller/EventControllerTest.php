@@ -4,7 +4,6 @@ namespace App\Tests\Controller;
 
 use App\Entity\EventPost;
 use App\Repository\EventPostRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class EventControllerTest extends WebTestCase
@@ -33,11 +32,6 @@ final class EventControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('persist');
-        $entityManager->expects($this->once())->method('flush');
-        static::getContainer()->set(EntityManagerInterface::class, $entityManager);
-
         $crawler = $client->request('GET', '/basisvr/events/new');
         $form = $crawler->selectButton('保存')->form([
             'event_post[title]' => 'Summer Event',
@@ -48,5 +42,8 @@ final class EventControllerTest extends WebTestCase
         $client->submit($form);
 
         $this->assertResponseRedirects('/basisvr/events');
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('body', 'Summer Event');
     }
 }
