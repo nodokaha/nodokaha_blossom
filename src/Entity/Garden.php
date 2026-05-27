@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GardenRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GardenRepository::class)]
@@ -22,6 +24,17 @@ class Garden
 
     #[ORM\Column(type: 'text')]
     private string $description = '';
+
+    /**
+     * @var Collection<int, Tile>
+     */
+    #[ORM\OneToMany(mappedBy: 'garden', targetEntity: Tile::class, orphanRemoval: true)]
+    private Collection $tiles;
+
+    public function __construct()
+    {
+        $this->tiles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -63,4 +76,30 @@ class Garden
 
         return $this;
     }
-}
+
+    /**
+     * @return Collection<int, Tile>
+     */
+    public function getTiles(): Collection
+    {
+        return $this->tiles;
+    }
+
+    public function addTile(Tile $tile): static
+    {
+        if (!$this->tiles->contains($tile)) {
+            $this->tiles->add($tile);
+            $tile->setGarden($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTile(Tile $tile): static
+    {
+        if ($this->tiles->removeElement($tile) && $tile->getGarden() === $this) {
+            $tile->setGarden(null);
+        }
+
+        return $this;
+    }
