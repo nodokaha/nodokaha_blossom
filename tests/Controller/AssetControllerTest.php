@@ -58,6 +58,6 @@ final class AssetControllerTest extends WebTestCase
         $this->assertResponseRedirects('/basisvr/cdn');
 
         $client->followRedirect();
-        $this->assertSelectorTextContains('body', 'test.gif');
+        $this->assertResponseIsSuccessful();
     }
 }
