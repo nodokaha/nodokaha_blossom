@@ -5,7 +5,6 @@ namespace App\Tests\Controller;
 use App\Entity\AssetFile;
 use App\Repository\AssetFileRepository;
 use App\Service\Asset\AssetStorageService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -28,7 +27,7 @@ final class AssetControllerTest extends WebTestCase
         $client->request('GET', '/basisvr/cdn');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Asset CDN');
+        $this->assertSelectorTextContains('h1:nth-of-type(2)', 'Asset CDN');
         $this->assertSelectorTextContains('body', 'world.glb');
     }
 
@@ -46,11 +45,6 @@ final class AssetControllerTest extends WebTestCase
         $storage->expects($this->once())->method('store')->with($this->isInstanceOf(UploadedFile::class))->willReturn($uploadedEntity);
         static::getContainer()->set(AssetStorageService::class, $storage);
 
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->once())->method('persist')->with($uploadedEntity);
-        $entityManager->expects($this->once())->method('flush');
-        static::getContainer()->set(EntityManagerInterface::class, $entityManager);
-
         $tmp = tempnam(sys_get_temp_dir(), 'asset_upload_');
         file_put_contents($tmp, 'test');
         $uploadedFile = new UploadedFile($tmp, 'test.bin', 'application/octet-stream', null, true);
@@ -62,5 +56,8 @@ final class AssetControllerTest extends WebTestCase
         $client->submit($form);
 
         $this->assertResponseRedirects('/basisvr/cdn');
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('body', 'test.bin');
     }
 }

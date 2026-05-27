@@ -17,13 +17,18 @@ class AssetStorageService
     {
         $extension = $uploadedFile->guessExtension() ?: 'bin';
         $storageKey = sprintf('%s.%s', bin2hex(random_bytes(16)), $extension);
-        $uploadedFile->move($this->uploadDirectory, $storageKey);
+
+        $clientMimeType = $uploadedFile->getClientMimeType();
+
+        $movedFile = $uploadedFile->move($this->uploadDirectory, $storageKey);
+        $mimeType = $clientMimeType ?: ($movedFile->getMimeType() ?? 'application/octet-stream');
+        $size = $movedFile->getSize() ?: 0;
 
         return (new AssetFile())
             ->setStorageKey($storageKey)
             ->setOriginalName($uploadedFile->getClientOriginalName())
-            ->setMimeType($uploadedFile->getMimeType() ?? 'application/octet-stream')
-            ->setSize($uploadedFile->getSize() ?: 0);
+            ->setMimeType($mimeType)
+            ->setSize($size);
     }
 
     public function resolvePath(string $storageKey): string
