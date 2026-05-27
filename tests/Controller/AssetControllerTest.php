@@ -27,7 +27,7 @@ final class AssetControllerTest extends WebTestCase
         $client->request('GET', '/basisvr/cdn');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1:nth-of-type(2)', 'Asset CDN');
+        $this->assertSelectorTextContains('body > h1', 'Asset CDN');
         $this->assertSelectorTextContains('body', 'world.glb');
     }
 
@@ -46,8 +46,8 @@ final class AssetControllerTest extends WebTestCase
         static::getContainer()->set(AssetStorageService::class, $storage);
 
         $tmp = tempnam(sys_get_temp_dir(), 'asset_upload_');
-        file_put_contents($tmp, 'test');
-        $uploadedFile = new UploadedFile($tmp, 'test.bin', 'application/octet-stream', null, true);
+        file_put_contents($tmp, "GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xFF\xFF\xFF!\xF9\x04\x00\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;");
+        $uploadedFile = new UploadedFile($tmp, 'test.gif', 'image/gif', null, true);
 
         $crawler = $client->request('GET', '/basisvr/cdn/upload');
         $form = $crawler->selectButton('アップロード')->form();
@@ -58,6 +58,6 @@ final class AssetControllerTest extends WebTestCase
         $this->assertResponseRedirects('/basisvr/cdn');
 
         $client->followRedirect();
-        $this->assertSelectorTextContains('body', 'test.bin');
+        $this->assertSelectorTextContains('body', 'test.gif');
     }
 }
