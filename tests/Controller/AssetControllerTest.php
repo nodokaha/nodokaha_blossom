@@ -27,7 +27,7 @@ final class AssetControllerTest extends WebTestCase
         $client->request('GET', '/basisvr/cdn');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Asset CDN');
+        $this->assertSelectorTextContains('h1:nth-of-type(2)', 'Asset CDN');
         $this->assertSelectorTextContains('body', 'world.glb');
     }
 

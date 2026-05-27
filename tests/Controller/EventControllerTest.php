@@ -24,7 +24,7 @@ final class EventControllerTest extends WebTestCase
         $client->request('GET', '/basisvr/events');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'BasisVR Event Board');
+        $this->assertSelectorTextContains('h1:nth-of-type(2)', 'BasisVR Event Board');
         $this->assertSelectorTextContains('body', 'BasisVR Meetup');
     }
 

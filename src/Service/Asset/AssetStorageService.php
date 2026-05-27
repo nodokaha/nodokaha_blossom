@@ -18,8 +18,10 @@ class AssetStorageService
         $extension = $uploadedFile->guessExtension() ?: 'bin';
         $storageKey = sprintf('%s.%s', bin2hex(random_bytes(16)), $extension);
 
+        $clientMimeType = $uploadedFile->getClientMimeType();
+
         $movedFile = $uploadedFile->move($this->uploadDirectory, $storageKey);
-        $mimeType = $movedFile->getMimeType() ?? 'application/octet-stream';
+        $mimeType = $clientMimeType ?: ($movedFile->getMimeType() ?? 'application/octet-stream');
         $size = $movedFile->getSize() ?: 0;
 
         return (new AssetFile())
