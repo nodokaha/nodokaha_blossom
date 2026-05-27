@@ -1,0 +1,19 @@
+{% extends 'basisvr_base.html.twig' %}
+
+{% block title %}BasisVR Events{% endblock %}
+
+{% block body %}
+    <h1>BasisVR Event Board</h1>
+    <a href="{{ path('basisvr_event_new') }}">新規イベント投稿</a>
+    <ul>
+        {% for post in posts %}
+            <li>
+                <h3>{{ post.title }}</h3>
+                <small>{{ post.authorName }} / {{ post.publishedAt|date('Y-m-d H:i') }}</small>
+                <p>{{ post.content|nl2br }}</p>
+            </li>
+        {% else %}
+            <li>投稿はまだありません。</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
