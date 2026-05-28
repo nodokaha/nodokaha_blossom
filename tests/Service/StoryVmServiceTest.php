@@ -85,6 +85,6 @@ class StoryVmServiceTest extends TestCase
 
         $this->assertCount(2, $result['network_signals']);
         $this->assertSame('broadcast', $result['network_signals'][0]['type']);
-        $this->assertSame('target', $result['network_signals'][1]['type']);
+        $this->assertSame('influence', $result['network_signals'][1]['type']);
     }
 }

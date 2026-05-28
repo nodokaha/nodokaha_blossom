@@ -116,7 +116,7 @@ final class WorldStateService
         $this->em->flush();
     }
 
-    public function getNetworkBroadcast(string $channel = null, int $limit = 50): array
+    public function getNetworkBroadcast(?string $channel = null, int $limit = 50): array
     {
         $broadcasts = $this->getWorldState()->getNetworkBroadcast();
 

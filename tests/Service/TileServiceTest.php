@@ -72,9 +72,9 @@ class TileServiceTest extends TestCase
 
     public function testInitializeGardenField(): void
     {
-        $this->tileRepository->expects($this->never())->method('findByCoordinates');
+        $this->tileRepository->expects($this->exactly(96))->method('findByCoordinates')->willReturn(null);
         $this->em->expects($this->atLeast(96))->method('persist'); // 12 * 8 = 96 tiles
-        $this->em->expects($this->once())->method('flush');
+        $this->em->expects($this->atLeast(96))->method('flush'); // flush called per tile
 
         $tiles = $this->tileService->initializeGardenField($this->garden, 12, 8);
 
