@@ -48,11 +48,13 @@ final class AssetStorageServiceTest extends TestCase
         );
 
         $service = new AssetStorageService($this->uploadDirectory);
-        $assetFile = $service->store($uploadedFile);
+        $encryptionKey = 'test-encryption-key-12345';
+        $assetFile = $service->store($uploadedFile, $encryptionKey);
 
         $this->assertSame('avatar.bin', $assetFile->getOriginalName());
         $this->assertSame('application/octet-stream', $assetFile->getMimeType());
         $this->assertSame(4, $assetFile->getSize());
+        $this->assertSame($encryptionKey, $assetFile->getEncryptionKey());
         $this->assertMatchesRegularExpression('/^[a-f0-9]{32}\.bin$/', $assetFile->getStorageKey());
         $this->assertFileExists($this->uploadDirectory.'/'.$assetFile->getStorageKey());
     }

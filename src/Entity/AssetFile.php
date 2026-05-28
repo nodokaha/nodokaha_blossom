@@ -28,6 +28,9 @@ class AssetFile
     #[ORM\Column]
     private int $size;
 
+    #[ORM\Column(length: 64)]
+    private string $encryptionKey;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -45,5 +48,7 @@ class AssetFile
     public function setMimeType(string $mimeType): self { $this->mimeType = $mimeType; return $this; }
     public function getSize(): int { return $this->size; }
     public function setSize(int $size): self { $this->size = $size; return $this; }
+    public function getEncryptionKey(): string { return $this->encryptionKey; }
+    public function setEncryptionKey(string $encryptionKey): self { $this->encryptionKey = $encryptionKey; return $this; }
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 }
