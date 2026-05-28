@@ -1,4 +1,6 @@
 setup:
+	mkdir -p var/cache/uploader/chunks
+	mkdir -p public/uploads/tmp
 	@docker compose up -d --build
 	@docker compose exec -T app composer install
 	@docker compose exec -T app php bin/console doctrine:database:create --if-not-exists --no-interaction
