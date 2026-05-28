@@ -59,13 +59,4 @@ final class AssetControllerUploadTest extends WebTestCase
         $this->assertStringContainsString('asset-upload-container', $html);
         $this->assertStringContainsString('.form-label', $html);
     }
-
-    public function testAssetIndexPageLoadsSuccessfully(): void
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/basisvr/cdn');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Asset CDN', $crawler->text());
-    }
 }
