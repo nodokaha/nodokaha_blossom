@@ -13,7 +13,7 @@ class AssetStorageService
     {
     }
 
-    public function store(UploadedFile $uploadedFile): AssetFile
+    public function store(UploadedFile $uploadedFile, string $encryptionKey): AssetFile
     {
         $originalExtension = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_EXTENSION);
         $extension = $originalExtension !== '' ? strtolower($originalExtension) : ($uploadedFile->guessExtension() ?: 'bin');
@@ -29,7 +29,8 @@ class AssetStorageService
             ->setStorageKey($storageKey)
             ->setOriginalName($uploadedFile->getClientOriginalName())
             ->setMimeType($mimeType)
-            ->setSize($size);
+            ->setSize($size)
+            ->setEncryptionKey($encryptionKey);
     }
 
     public function resolvePath(string $storageKey): string

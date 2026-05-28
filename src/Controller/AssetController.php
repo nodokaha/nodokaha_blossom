@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/basisvr/cdn')]
 class AssetController extends AbstractController
@@ -34,12 +35,16 @@ class AssetController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $uploaded = $form->get('asset')->getData();
-            if ($uploaded !== null) {
-                $asset = $assetStorageService->store($uploaded);
+            $encryptionKey = $form->get('encryptionKey')->getData();
+            if ($uploaded !== null && $encryptionKey !== null) {
+                $asset = $assetStorageService->store($uploaded, $encryptionKey);
                 $entityManager->persist($asset);
                 $entityManager->flush();
 
-                return $this->redirectToRoute('basisvr_asset_index');
+                return $this->render('asset/upload_success.html.twig', [
+                    'asset' => $asset,
+                    'downloadUrl' => $this->generateUrl('basisvr_asset_serve', ['storageKey' => $asset->getStorageKey()], UrlGeneratorInterface::ABSOLUTE_URL),
+                ]);
             }
         }
 
