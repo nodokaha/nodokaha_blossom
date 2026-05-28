@@ -4,10 +4,10 @@ namespace App\Service;
 
 class StoryVmService
 {
-    public function runProgram(array $program): array
+    public function runProgram(array $program, array $globalStack = [], array $globalEnv = []): array
     {
         $stack = [];
-        $env = [];
+        $env = $globalEnv;
         $dump = [];
         $pc = 0;
         $trace = [];
@@ -29,6 +29,15 @@ class StoryVmService
                 case 'ST':
                     if ($args[0] ?? false) {
                         $env[$args[0]] = array_pop($stack);
+                    }
+                    break;
+                case 'LDG':
+                    // Load from global stack
+                    $index = (int) ($args[0] ?? -1);
+                    if ($index >= 0 && isset($globalStack[$index])) {
+                        $stack[] = $globalStack[$index];
+                    } else {
+                        $stack[] = null;
                     }
                     break;
                 case 'ADD':
@@ -76,7 +85,7 @@ class StoryVmService
                 case 'INFLUENCE':
                     $target = mb_strtolower((string) ($args[0] ?? 'all'));
                     $impact = is_numeric($args[1] ?? null) ? (int) round((float) $args[1]) : 1;
-                    $networkSignals[] = ['type' => 'target', 'target' => $target, 'impact' => max(-5, min(5, $impact))];
+                    $networkSignals[] = ['type' => 'influence', 'target' => $target, 'impact' => max(-5, min(5, $impact))];
                     break;
                 case 'STOP':
                     $pc = count($program);
@@ -90,5 +99,33 @@ class StoryVmService
         }
 
         return ['stack' => $stack, 'env' => $env, 'dump' => $dump, 'trace' => $trace, 'network_signals' => $networkSignals];
+    }
+
+    public function runTileProgram(array $stackData, array $globalStack = []): array
+    {
+        return $this->runProgram($stackData, $globalStack);
+    }
+
+    public function aggregateNetworkSignals(array $results): array
+    {
+        $broadcasts = [];
+        $influences = [];
+
+        foreach ($results as $result) {
+            if (isset($result['network_signals'])) {
+                foreach ($result['network_signals'] as $signal) {
+                    if ($signal['type'] === 'broadcast') {
+                        $broadcasts[] = $signal;
+                    } elseif ($signal['type'] === 'influence') {
+                        $influences[] = $signal;
+                    }
+                }
+            }
+        }
+
+        return [
+            'broadcasts' => $broadcasts,
+            'influences' => $influences,
+        ];
     }
 }
