@@ -141,3 +141,32 @@ small,
 .text-muted {
     color: var(--retro-muted);
 }
+
+/* Event board styles */
+.event-list {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.event-card {
+    border-left: 6px solid var(--retro-border-light);
+    padding: 1rem;
+}
+
+.event-card h3 {
+    margin: 0 0 0.25rem 0;
+}
+
+.comment-list .comment {
+    border-left: 4px solid var(--retro-border-dark);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+}
+
+.comment-form textarea {
+    min-height: 80px;
+}
+
+.button button {
+    background: var(--retro-border-light);
+    color: #1b1130;
+}

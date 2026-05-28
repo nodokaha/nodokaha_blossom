@@ -1,5 +1,20 @@
 {% extends 'basisvr_base.html.twig' %}
 
+{% block title %}New Event Post{% endblock %}
+
+{% block body %}
+<main class="container" style="max-width:720px;margin:1.5rem auto;padding:1rem;">
+  <h2>Create Event Post</h2>
+  <div class="card" style="padding:1rem;margin-top:1rem;">
+    {{ form_start(form) }}
+      {{ form_widget(form) }}
+      <div style="margin-top:0.75rem;"><button type="submit">Submit</button></div>
+    {{ form_end(form) }}
+  </div>
+</main>
+{% endblock %}
+{% extends 'basisvr_base.html.twig' %}
+
 {% block title %}イベント投稿{% endblock %}
 
 {% block body %}

@@ -1,5 +1,29 @@
 {% extends 'basisvr_base.html.twig' %}
 
+{% block title %}Event Board{% endblock %}
+
+{% block body %}
+<main class="container" style="max-width:900px;margin:1.5rem auto;padding:1rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h2>Event Board</h2>
+    <a class="button" href="{{ path('basisvr_event_new') }}"><button>Create Post</button></a>
+  </div>
+  <section class="event-list" style="margin-top:1rem;display:grid;gap:1rem;">
+    {% for post in posts %}
+      <article class="event-card card" style="padding:1rem;">
+        <h3><a href="{{ path('basisvr_event_show', {id: post.id}) }}">{{ post.title }}</a></h3>
+        <small class="text-muted">By {{ post.authorName }} · {{ post.publishedAt|date('Y-m-d H:i') }}</small>
+        <p style="margin-top:0.75rem;">{{ post.content[:240] ~ (post.content|length > 240 ? '…' : '') }}</p>
+        <div style="margin-top:0.5rem;"><a href="{{ path('basisvr_event_show', {id: post.id}) }}">Read more →</a></div>
+      </article>
+    {% else %}
+      <p>No posts yet.</p>
+    {% endfor %}
+  </section>
+</main>
+{% endblock %}
+{% extends 'basisvr_base.html.twig' %}
+
 {% block title %}BasisVR Events{% endblock %}
 
 {% block body %}

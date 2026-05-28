@@ -21,7 +21,7 @@ class AssetUploadType extends AbstractType
             ->add('asset', FileType::class, [
                 'mapped' => false,
                 'constraints' => [
-                    new File(maxSize: '20M', mimeTypes: ['image/*', 'model/gltf-binary', 'application/octet-stream']),
+                    new File(maxSize: '100M', mimeTypes: ['application/octet-stream']),
                 ],
             ])
             ->add('encryptionKey', TextType::class, [

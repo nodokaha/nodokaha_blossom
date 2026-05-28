@@ -11,8 +11,8 @@
             {{ form_start(form, {'attr': {'class': 'asset-upload-form', 'novalidate': 'novalidate'}}) }}
                 <div class="form-group">
                     {{ form_label(form.asset, 'ファイルを選択', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.asset, {'attr': {'class': 'form-control file-input', 'accept': '.glb,.gltf,.jpg,.jpeg,.png,.webp'}}) }}
-                    <small class="form-text">対応ファイル: glTF (glb, gltf), 画像 (jpg, png, webp) - 最大20MB</small>
+                    {{ form_widget(form.asset, {'attr': {'class': 'form-control file-input', 'accept': '.BEE'}}) }}
+                    <small class="form-text">対応ファイル: BEE (最大100M)</small>
                     {{ form_errors(form.asset) }}
                 </div>
 
