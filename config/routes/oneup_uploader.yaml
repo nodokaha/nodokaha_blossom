@@ -1,0 +1,3 @@
+oneup_uploader:
+    resource: "@OneupUploaderBundle/Resources/config/routing.xml"
+    prefix: /uploader
