@@ -1,23 +1,39 @@
 {% extends 'basisvr_base.html.twig' %}
 
-{% block title %}New Event Post{% endblock %}
+{% block title %}BasisVR イベント投稿作成{% endblock %}
 
 {% block body %}
-<main class="blog-page blog-form-page">
+<main id="basisvr-main" class="blog-page blog-form-page">
+  <nav class="breadcrumb" aria-label="パンくずリスト">
+    <a href="{{ path('basisvr_event_index') }}">イベントブログ</a>
+    <span aria-hidden="true">/</span>
+    <span>新規投稿</span>
+  </nav>
+
   <section class="blog-hero compact-hero">
     <div>
       <p class="eyebrow">New Post</p>
-      <h1>Create Event Post</h1>
-      <p class="hero-copy">Share your event with the community using a short title and a strong description.</p>
+      <h1>イベント投稿を作成</h1>
+      <p class="hero-copy">タイトル、投稿者名、本文の3項目で公開できます。入力ヒントに沿って、参加者が次に何をすればよいか分かる内容にしましょう。</p>
     </div>
   </section>
 
-  <section class="form-panel card">
+  <section class="form-panel card" aria-labelledby="new-post-heading">
+    <div class="form-intro">
+      <h2 id="new-post-heading">投稿内容</h2>
+      <p>CSRF保護に加え、ボットが埋めやすい非表示項目を検知して自動投稿を抑止します。</p>
+    </div>
     {{ form_start(form, {'attr': {'class': 'blog-form'}}) }}
+      {{ form_errors(form) }}
       {{ form_row(form.title) }}
       {{ form_row(form.authorName) }}
       {{ form_row(form.content) }}
-      <div class="form-actions"><button class="blog-button" type="submit">保存</button></div>
+      {{ form_row(form.website) }}
+      {{ form_row(form.submissionToken) }}
+      <div class="form-actions">
+        <button class="blog-button" type="submit">投稿を公開</button>
+        <a class="ghost-button" href="{{ path('basisvr_event_index') }}">キャンセル</a>
+      </div>
     {{ form_end(form) }}
   </section>
 </main>

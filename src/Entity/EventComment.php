@@ -19,10 +19,12 @@ class EventComment
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 1200)]
     private ?string $content = null;
 
     #[ORM\Column(length: 80)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 80)]
     private ?string $authorName = null;
 
     #[ORM\Column]

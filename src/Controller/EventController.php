@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/basisvr/events')]
@@ -33,7 +34,12 @@ class EventController extends AbstractController
         $form = $this->createForm(EventPostType::class, $post);
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $this->isBotSubmission($form)) {
+            return $this->redirectToRoute('basisvr_event_index');
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->addFlash('success', '投稿を公開しました。');
             $entityManager->persist($post);
             $entityManager->flush();
 
@@ -52,17 +58,32 @@ class EventController extends AbstractController
         $form = $this->createForm(EventCommentType::class, $comment);
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $this->isBotSubmission($form)) {
+            return $this->redirectToRoute('basisvr_event_show', ['id' => $post->getId()]);
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $comment->setPost($post);
             $entityManager->persist($comment);
             $entityManager->flush();
+            $this->addFlash('success', 'コメントを投稿しました。');
 
-            return $this->redirectToRoute('basisvr_event_show', ['id' => $post->getId()]);
+            return $this->redirectToRoute('basisvr_event_show', ['id' => $post->getId(), '_fragment' => 'comments']);
         }
 
         return $this->render('event/show.html.twig', [
             'post' => $post,
             'commentForm' => $form,
         ]);
+    }
+
+    /** @param FormInterface<mixed> $form */
+    private function isBotSubmission(FormInterface $form): bool
+    {
+        if (! $form->has('website')) {
+            return false;
+        }
+
+        return trim((string) $form->get('website')->getData()) !== '';
     }
 }

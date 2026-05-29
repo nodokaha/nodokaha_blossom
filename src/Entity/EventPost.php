@@ -27,10 +27,12 @@ class EventPost
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 5000)]
     private ?string $content = null;
 
     #[ORM\Column(length: 80)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 80)]
     private ?string $authorName = null;
 
     #[ORM\Column]

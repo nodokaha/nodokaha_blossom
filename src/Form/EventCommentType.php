@@ -6,18 +6,60 @@ namespace App\Form;
 
 use App\Entity\EventComment;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EventCommentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('authorName', TextType::class, ['label' => 'Name'])
-            ->add('content', TextareaType::class, ['attr' => ['rows' => 4]]);
+            ->add('authorName', TextType::class, [
+                'label' => '名前',
+                'help' => 'コメント欄に表示される名前です。',
+                'attr' => [
+                    'maxlength' => 80,
+                    'placeholder' => '例：参加予定者',
+                    'autocomplete' => 'name',
+                ],
+            ])
+            ->add('content', TextareaType::class, [
+                'label' => 'コメント',
+                'help' => '質問・補足・参加表明などを簡潔に投稿できます。',
+                'attr' => [
+                    'rows' => 5,
+                    'maxlength' => 1200,
+                    'placeholder' => '例：当日の集合場所はどこですか？',
+                ],
+            ])
+            ->add('website', TextType::class, [
+                'label' => 'Web site',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'bot-trap-field',
+                    'autocomplete' => 'off',
+                    'tabindex' => '-1',
+                    'aria-hidden' => 'true',
+                ],
+                'row_attr' => [
+                    'class' => 'bot-trap-row',
+                    'aria-hidden' => 'true',
+                ],
+            ])
+            ->add('submissionToken', HiddenType::class, [
+                'mapped' => false,
+                'data' => bin2hex(random_bytes(8)),
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(min: 16, max: 16),
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

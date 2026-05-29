@@ -17,14 +17,14 @@ final class EventControllerTest extends WebTestCase
             ->setAuthorName('admin')
             ->setContent("Line1\nLine2");
 
-        $repo = $this->createMock(EventPostRepository::class);
+        $repo = $this->createStub(EventPostRepository::class);
         $repo->method('findLatest')->willReturn([$post]);
         static::getContainer()->set(EventPostRepository::class, $repo);
 
         $client->request('GET', '/basisvr/events');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('body > h1', 'BasisVR Event Board');
+        $this->assertSelectorTextContains('h1', 'BasisVR イベントブログ');
         $this->assertSelectorTextContains('body', 'BasisVR Meetup');
     }
 
@@ -33,10 +33,11 @@ final class EventControllerTest extends WebTestCase
         $client = static::createClient();
 
         $crawler = $client->request('GET', '/basisvr/events/new');
-        $form = $crawler->selectButton('保存')->form([
+        $form = $crawler->selectButton('投稿を公開')->form([
             'event_post[title]' => 'Summer Event',
             'event_post[authorName]' => 'staff',
             'event_post[content]' => 'Event details',
+            'event_post[website]' => '',
         ]);
 
         $client->submit($form);
@@ -45,5 +46,25 @@ final class EventControllerTest extends WebTestCase
 
         $client->followRedirect();
         $this->assertSelectorTextContains('body', 'Summer Event');
+    }
+
+    public function testEventNewRejectsHoneypotSubmission(): void
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/basisvr/events/new');
+        $form = $crawler->selectButton('投稿を公開')->form([
+            'event_post[title]' => 'Spam Event',
+            'event_post[authorName]' => 'bot',
+            'event_post[content]' => 'Automated content',
+            'event_post[website]' => 'https://spam.example',
+        ]);
+
+        $client->submit($form);
+
+        $this->assertResponseRedirects('/basisvr/events');
+
+        $client->followRedirect();
+        $this->assertSelectorTextNotContains('body', 'Spam Event');
     }
 }

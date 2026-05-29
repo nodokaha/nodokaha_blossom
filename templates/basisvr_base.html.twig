@@ -1,19 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}BasisVR Services{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>◆</text></svg>">
+        <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% block stylesheets %}{% endblock %}
+        {% block javascripts %}{% endblock %}
     </head>
-    <body>
-        <header>
-            <h1>BasisVR Utility Services</h1>
-            <nav>
-                <a href="{{ path('basisvr_event_index') }}">Event Board</a> |
-                <a href="{{ path('basisvr_asset_index') }}">Asset CDN</a>
+    <body class="basisvr-shell">
+        <a class="skip-link" href="#basisvr-main">本文へスキップ</a>
+        <header class="basisvr-header">
+            <nav class="basisvr-nav" aria-label="BasisVR navigation">
+                <a href="{{ path('basisvr_event_index') }}" class="basisvr-brand">BasisVR Utility Services</a>
+                <div class="basisvr-nav-links">
+                    <a href="{{ path('basisvr_event_index') }}">イベントブログ</a>
+                    <a href="{{ path('basisvr_event_new') }}">投稿する</a>
+                    <a href="{{ path('basisvr_asset_index') }}">Asset CDN</a>
+                    <a href="{{ path('app_home') }}">NODOKAHAへ戻る</a>
+                </div>
             </nav>
-            <hr>
         </header>
+
+        {% for label, messages in app.flashes %}
+            <div class="flash-stack" role="status" aria-live="polite">
+                {% for message in messages %}
+                    <div class="flash-message flash-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
         {% block body %}{% endblock %}
     </body>
 </html>
