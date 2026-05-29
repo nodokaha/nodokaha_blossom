@@ -3,36 +3,47 @@
 {% block title %}{{ post.title }} — Event{% endblock %}
 
 {% block body %}
-<main class="container" style="max-width:800px;margin:1.5rem auto;padding:1rem;">
-  <article class="card" style="padding:1rem;">
-    <h2>{{ post.title }}</h2>
-    <small class="text-muted">By {{ post.authorName }} · {{ post.publishedAt|date('Y-m-d H:i') }}</small>
-    <div style="margin-top:1rem;white-space:pre-wrap;">{{ post.content }}</div>
+<main class="blog-page blog-article-page">
+  <section class="article-hero">
+    <div>
+      <p class="eyebrow">Event Post</p>
+      <h1>{{ post.title }}</h1>
+      <p class="article-meta">By {{ post.authorName }} · {{ post.publishedAt|date('Y.m.d H:i') }}</p>
+    </div>
+  </section>
+
+  <article class="post-content card">
+    <div class="content-body">{{ post.content|nl2br }}</div>
   </article>
 
-  <section style="margin-top:1rem;">
-    <h3>Comments ({{ post.comments|length }})</h3>
-    <div class="comment-list" style="display:grid;gap:0.75rem;margin-top:0.5rem;">
+  <section class="comments-section">
+    <div class="section-header">
+      <h2>Comments</h2>
+      <span class="comment-count">({{ post.comments|length }})</span>
+    </div>
+    <div class="comment-thread">
       {% for c in post.comments %}
-        <div class="comment card" style="padding:0.75rem;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="comment-card">
+          <div class="comment-head">
             <strong>{{ c.authorName }}</strong>
-            <small class="text-muted">{{ c.publishedAt|date('Y-m-d H:i') }}</small>
+            <span>{{ c.publishedAt|date('Y.m.d H:i') }}</span>
           </div>
-          <div style="margin-top:0.5rem;white-space:pre-wrap;">{{ c.content }}</div>
+          <div class="comment-body">{{ c.content|nl2br }}</div>
         </div>
       {% else %}
-        <p class="text-muted">No comments yet — be the first to reply.</p>
+        <div class="empty-state card">
+          <p>No comments yet. Be the first to reply.</p>
+        </div>
       {% endfor %}
     </div>
   </section>
 
-  <section style="margin-top:1rem;">
-    <h3>Leave a comment</h3>
-    <div class="card" style="padding:1rem;margin-top:0.5rem;">
+  <section class="comment-form">
+    <h2>Leave a comment</h2>
+    <div class="card form-card">
       {{ form_start(commentForm) }}
         {{ form_widget(commentForm) }}
-        <div style="margin-top:0.5rem;"><button type="submit">Post Comment</button></div>
+        <div class="form-actions"><button class="blog-button" type="submit">Post Comment</button></div>
       {{ form_end(commentForm) }}
     </div>
   </section>

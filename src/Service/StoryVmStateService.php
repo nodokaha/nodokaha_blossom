@@ -34,6 +34,9 @@ class StoryVmStateService
 
     private function defaultWorld(): array
     {
+        $width = 12;
+        $height = 8;
+
         return [
             'calendar_start' => '2026-01-01',
             'day' => 1,
@@ -55,9 +58,9 @@ class StoryVmStateService
                 'caretaker_ai' => '待機中',
             ],
             'field' => [
-                'width' => 12,
-                'height' => 8,
-                'tiles' => [],
+                'width' => $width,
+                'height' => $height,
+                'tiles' => $this->defaultFieldTiles($width, $height),
             ],
             'chronicle' => [],
             'network' => [
@@ -65,5 +68,25 @@ class StoryVmStateService
                 'garden_influence' => [],
             ],
         ];
+    }
+
+    private function defaultFieldTiles(int $width, int $height): array
+    {
+        $tiles = [];
+
+        for ($y = 0; $y < $height; ++$y) {
+            $row = [];
+            for ($x = 0; $x < $width; ++$x) {
+                $row[] = [
+                    'x' => $x,
+                    'y' => $y,
+                    'terrain' => 'soil',
+                    'growth' => 'seed',
+                ];
+            }
+            $tiles[] = $row;
+        }
+
+        return $tiles;
     }
 }

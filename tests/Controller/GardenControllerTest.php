@@ -61,12 +61,21 @@ final class GardenControllerTest extends WebTestCase
         $client = static::createClient();
 
         $currentUser = $this->createPersistedUser('charlie@example.com');
-        $currentUserId = (int) $currentUser->getId();
+        $otherUser = $this->createPersistedUser('dave@example.com');
+        $garden = (new Garden())
+            ->setOwner($otherUser)
+            ->setName('他人の箱庭')
+            ->setDescription('観察用の箱庭です');
+
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->persist($garden);
+        $entityManager->flush();
 
         $client->loginUser($currentUser, 'main');
-        $client->request('GET', sprintf('/my-garden/%d', $currentUserId + 1));
+        $client->request('GET', sprintf('/my-garden/%d', $otherUser->getId()));
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', '観察モード');
     }
 
     private function createPersistedUser(string $email): User
