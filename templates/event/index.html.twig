@@ -1,24 +1,43 @@
 {% extends 'basisvr_base.html.twig' %}
 
-{% block title %}Event Board{% endblock %}
+{% block title %}BasisVR イベントブログ{% endblock %}
 
 {% block body %}
-<h1>BasisVR Event Board</h1>
-<main class="blog-page">
+<main id="basisvr-main" class="blog-page">
   <section class="blog-hero">
     <div>
       <p class="eyebrow">Community Journal</p>
-      <p class="hero-copy">最新の投稿とコメントをブログ感覚でチェックしてください。気軽にイベントをシェアして、みんなで盛り上げましょう。</p>
+      <h1>BasisVR イベントブログ</h1>
+      <p class="hero-copy">最新のお知らせ、イベント告知、参加者コメントを一か所で確認できます。投稿前の要点整理とコメント導線を強化し、初めての人も迷わず参加できるブログにしました。</p>
+      <div class="hero-actions" aria-label="主要アクション">
+        <a class="blog-button" href="{{ path('basisvr_event_new') }}">新規投稿する</a>
+        <a class="ghost-button" href="#post-list">投稿一覧を見る</a>
+      </div>
     </div>
-    <a class="blog-button" href="{{ path('basisvr_event_new') }}">Create Post</a>
+    <aside class="hero-checklist" aria-label="投稿時の確認事項">
+      <h2>投稿前チェック</h2>
+      <ul>
+        <li>日時・場所・参加方法を明記</li>
+        <li>質問は各記事のコメントへ集約</li>
+        <li>短いタイトルで要点を共有</li>
+      </ul>
+    </aside>
   </section>
 
-  <section class="blog-grid">
+  <section class="blog-toolbar" aria-label="ブログ概要">
+    <div>
+      <strong>{{ posts|length }}</strong>
+      <span>件の公開投稿</span>
+    </div>
+    <p>新着順で表示しています。詳細ページからコメントできます。</p>
+  </section>
+
+  <section id="post-list" class="blog-grid" aria-label="イベント投稿一覧">
     {% for post in posts %}
       <article class="post-card">
         <div class="post-card-header">
           <span class="post-category">Event</span>
-          <span class="post-meta">{{ post.publishedAt|date('Y.m.d H:i') }}</span>
+          <time class="post-meta" datetime="{{ post.publishedAt|date('c') }}">{{ post.publishedAt|date('Y.m.d H:i') }}</time>
         </div>
         <h2 class="post-title">
           {% if post.id is defined and post.id %}
@@ -27,17 +46,19 @@
             {{ post.title }}
           {% endif %}
         </h2>
-        <p class="post-excerpt">{{ post.content[:240] ~ (post.content|length > 240 ? '…' : '') }}</p>
+        <p class="post-excerpt">{{ post.content[:220] ~ (post.content|length > 220 ? '…' : '') }}</p>
         <div class="post-footer">
-          <span class="post-author">By {{ post.authorName }}</span>
+          <span class="post-author">{{ post.authorName }}</span>
           {% if post.id is defined and post.id %}
-            <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">Read more →</a>
+            <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">詳細とコメントへ →</a>
           {% endif %}
         </div>
       </article>
     {% else %}
       <div class="empty-state card">
-        <p>No posts yet. Be the first to create one.</p>
+        <h2>まだ投稿はありません</h2>
+        <p>最初のイベント情報を投稿して、BasisVRコミュニティに共有しましょう。</p>
+        <a class="blog-button" href="{{ path('basisvr_event_new') }}">最初の投稿を作成</a>
       </div>
     {% endfor %}
   </section>

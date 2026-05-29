@@ -1,14 +1,24 @@
 {% extends 'basisvr_base.html.twig' %}
 
-{% block title %}{{ post.title }} — Event{% endblock %}
+{% block title %}{{ post.title }} — BasisVR イベントブログ{% endblock %}
 
 {% block body %}
-<main class="blog-page blog-article-page">
+<main id="basisvr-main" class="blog-page blog-article-page">
+  <nav class="breadcrumb" aria-label="パンくずリスト">
+    <a href="{{ path('basisvr_event_index') }}">イベントブログ</a>
+    <span aria-hidden="true">/</span>
+    <span>{{ post.title }}</span>
+  </nav>
+
   <section class="article-hero">
     <div>
       <p class="eyebrow">Event Post</p>
       <h1>{{ post.title }}</h1>
-      <p class="article-meta">By {{ post.authorName }} · {{ post.publishedAt|date('Y.m.d H:i') }}</p>
+      <p class="article-meta">{{ post.authorName }} · <time datetime="{{ post.publishedAt|date('c') }}">{{ post.publishedAt|date('Y.m.d H:i') }}</time></p>
+    </div>
+    <div class="article-actions" aria-label="記事アクション">
+      <a class="ghost-button" href="{{ path('basisvr_event_index') }}">一覧へ戻る</a>
+      <a class="blog-button" href="#comment-form">コメントする</a>
     </div>
   </section>
 
@@ -16,34 +26,45 @@
     <div class="content-body">{{ post.content|nl2br }}</div>
   </article>
 
-  <section class="comments-section">
+  <section id="comments" class="comments-section" aria-labelledby="comments-heading">
     <div class="section-header">
-      <h2>Comments</h2>
-      <span class="comment-count">({{ post.comments|length }})</span>
+      <h2 id="comments-heading">コメント</h2>
+      <span class="comment-count">{{ post.comments|length }}件</span>
     </div>
     <div class="comment-thread">
       {% for c in post.comments %}
-        <div class="comment-card">
+        <article class="comment-card">
           <div class="comment-head">
             <strong>{{ c.authorName }}</strong>
-            <span>{{ c.publishedAt|date('Y.m.d H:i') }}</span>
+            <time datetime="{{ c.publishedAt|date('c') }}">{{ c.publishedAt|date('Y.m.d H:i') }}</time>
           </div>
           <div class="comment-body">{{ c.content|nl2br }}</div>
-        </div>
+        </article>
       {% else %}
         <div class="empty-state card">
-          <p>No comments yet. Be the first to reply.</p>
+          <h3>まだコメントはありません</h3>
+          <p>参加表明や質問を投稿すると、次の人が状況を把握しやすくなります。</p>
         </div>
       {% endfor %}
     </div>
   </section>
 
-  <section class="comment-form">
-    <h2>Leave a comment</h2>
+  <section id="comment-form" class="comment-form" aria-labelledby="comment-form-heading">
+    <div class="section-header">
+      <h2 id="comment-form-heading">コメントを書く</h2>
+      <p>スパム防止のため、空欄のままにする検証欄を自動確認しています。</p>
+    </div>
     <div class="card form-card">
-      {{ form_start(commentForm) }}
-        {{ form_widget(commentForm) }}
-        <div class="form-actions"><button class="blog-button" type="submit">Post Comment</button></div>
+      {{ form_start(commentForm, {'attr': {'class': 'blog-form'}}) }}
+        {{ form_errors(commentForm) }}
+        {{ form_row(commentForm.authorName) }}
+        {{ form_row(commentForm.content) }}
+        {{ form_row(commentForm.website) }}
+        {{ form_row(commentForm.submissionToken) }}
+        <div class="form-actions">
+          <button class="blog-button" type="submit">コメントを投稿</button>
+          <a class="ghost-button" href="{{ path('basisvr_event_index') }}">一覧へ戻る</a>
+        </div>
       {{ form_end(commentForm) }}
     </div>
   </section>
