@@ -1,19 +1,45 @@
 {% extends 'basisvr_base.html.twig' %}
 
-{% block title %}BasisVR Events{% endblock %}
+{% block title %}Event Board{% endblock %}
 
 {% block body %}
-    <h1>BasisVR Event Board</h1>
-    <a href="{{ path('basisvr_event_new') }}">新規イベント投稿</a>
-    <ul>
-        {% for post in posts %}
-            <li>
-                <h3>{{ post.title }}</h3>
-                <small>{{ post.authorName }} / {{ post.publishedAt|date('Y-m-d H:i') }}</small>
-                <p>{{ post.content|nl2br }}</p>
-            </li>
-        {% else %}
-            <li>投稿はまだありません。</li>
-        {% endfor %}
-    </ul>
+<h1>BasisVR Event Board</h1>
+<main class="blog-page">
+  <section class="blog-hero">
+    <div>
+      <p class="eyebrow">Community Journal</p>
+      <p class="hero-copy">最新の投稿とコメントをブログ感覚でチェックしてください。気軽にイベントをシェアして、みんなで盛り上げましょう。</p>
+    </div>
+    <a class="blog-button" href="{{ path('basisvr_event_new') }}">Create Post</a>
+  </section>
+
+  <section class="blog-grid">
+    {% for post in posts %}
+      <article class="post-card">
+        <div class="post-card-header">
+          <span class="post-category">Event</span>
+          <span class="post-meta">{{ post.publishedAt|date('Y.m.d H:i') }}</span>
+        </div>
+        <h2 class="post-title">
+          {% if post.id is defined and post.id %}
+            <a href="{{ path('basisvr_event_show', {id: post.id}) }}">{{ post.title }}</a>
+          {% else %}
+            {{ post.title }}
+          {% endif %}
+        </h2>
+        <p class="post-excerpt">{{ post.content[:240] ~ (post.content|length > 240 ? '…' : '') }}</p>
+        <div class="post-footer">
+          <span class="post-author">By {{ post.authorName }}</span>
+          {% if post.id is defined and post.id %}
+            <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">Read more →</a>
+          {% endif %}
+        </div>
+      </article>
+    {% else %}
+      <div class="empty-state card">
+        <p>No posts yet. Be the first to create one.</p>
+      </div>
+    {% endfor %}
+  </section>
+</main>
 {% endblock %}

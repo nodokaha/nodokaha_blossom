@@ -22,13 +22,17 @@
         .stack-tile{background:#1f2937;border:1px solid #475569;border-radius:8px;padding:.4rem .6rem;font-size:.85rem}
     </style>
     <main class="garden-wrap">
-        <h1>{{ owner.email }}さん専用の箱庭管理画面</h1>
+        {% if is_owner %}
+            <h1>{{ owner.email }}さん専用の箱庭管理画面</h1>
+        {% else %}
+            <h1>{{ owner.email }}さんの箱庭 <small style="font-size:0.85rem;color:#9ca3af;">観察モード</small></h1>
+        {% endif %}
         <p>ラボ情報を統合し、スタックも「成長タイル」として可視化しています。</p>
 
         <section class="panel">
             <h2>箱庭の成長ステータス</h2>
             <div class="kpis">
-                <div class="kpi"><strong>Day</strong><div>{{ state.world.day }}</div></div>
+                    <div class="kpi"><strong>Day</strong><div>{{ state.world.day }}</div></div>
                 <div class="kpi"><strong>開花率</strong><div>{{ state.world.biome.bloom_rate }}%</div></div>
                 <div class="kpi"><strong>天候</strong><div>{{ state.world.biome.weather }}</div></div>
                 <div class="kpi"><strong>同期干渉</strong><div>{{ network_targeted + network_shared }} (target {{ network_targeted }}, all {{ network_shared }})</div></div>
@@ -42,9 +46,13 @@
         <section class="panel">
             <h2>箱庭タイル（Lab統合ビュー）</h2>
             <div class="field" style="grid-template-columns:repeat({{ state.world.field.width }},32px);">
-                {% for row in state.world.field.tiles %}
+                {% set field_tiles = state.world.field.tiles|default([]) %}
+                {% if field_tiles is not empty and field_tiles[0] is not iterable %}
+                    {% set field_tiles = field_tiles|batch(state.world.field.width|default(12)) %}
+                {% endif %}
+                {% for row in field_tiles %}
                     {% for tile in row %}
-                        <div class="tile tile-{{ tile.terrain }} growth-{{ tile.growth }}" title="({{ tile.x }},{{ tile.y }}) {{ tile.terrain }} / {{ tile.growth }}"></div>
+                        <div class="tile tile-{{ tile.terrain|default('soil') }} growth-{{ tile.growth|default('seed') }}" title="({{ tile.x|default('?') }},{{ tile.y|default('?') }}) {{ tile.terrain|default('soil') }} / {{ tile.growth|default('seed') }}"></div>
                     {% endfor %}
                 {% endfor %}
             </div>
@@ -60,6 +68,28 @@
                 <div class="stack">
                     {% for value in stack %}
                         <div class="stack-tile">Stack {{ loop.index }}: {{ value }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>命令実行履歴</h2>
+            <p>最近の命令と実行結果を確認できます。実行済み・失敗した命令は状態と結果が表示されます。</p>
+            {% if command_history is empty %}
+                <p>まだ命令履歴がありません。</p>
+            {% else %}
+                <div style="display:grid;gap:.75rem;">
+                    {% for command in command_history %}
+                        <div style="background:#111827;border:1px solid #334155;border-radius:10px;padding:.9rem;">
+                            <strong>{{ command.command.opcode|default('UNKNOWN') }}</strong>
+                            <span style="color:#9ca3af; font-size:0.9rem;">({{ command.insertedDate|date('Y-m-d') }})</span>
+                            <div style="margin:.35rem 0; font-size:0.95rem;">引数: {{ command.command.args|default('なし') }}</div>
+                            <div style="font-size:0.9rem; color:#cbd5e1;">状態: {{ command.status }}</div>
+                            {% if command.executionResult is not empty %}
+                                <pre style="margin:.5rem 0 0; padding:.5rem; background:#0f172a; border-radius:8px; color:#d1d5db; overflow:auto;">{{ command.executionResult|json_encode|raw }}</pre>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
             {% endif %}

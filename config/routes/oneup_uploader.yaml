@@ -1,0 +1,4 @@
+oneup_uploader:
+    resource: .
+    type: uploader
+    prefix: /uploader

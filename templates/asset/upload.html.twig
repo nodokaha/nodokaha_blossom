@@ -8,11 +8,13 @@
         <p class="subtitle">VR用のモデル、画像、その他のアセットをアップロードしてください</p>
 
         <div class="upload-form-wrapper">
-            {{ form_start(form, {'attr': {'class': 'asset-upload-form', 'novalidate': 'novalidate'}}) }}
+                <div id="uploader" style="margin-bottom:20px;"></div>
+
+                {{ form_start(form, {'attr': {'class': 'asset-upload-form', 'novalidate': 'novalidate'}}) }}
                 <div class="form-group">
                     {{ form_label(form.asset, 'ファイルを選択', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.asset, {'attr': {'class': 'form-control file-input', 'accept': '.glb,.gltf,.jpg,.jpeg,.png,.webp'}}) }}
-                    <small class="form-text">対応ファイル: glTF (glb, gltf), 画像 (jpg, png, webp) - 最大20MB</small>
+                    {{ form_widget(form.asset, {'attr': {'class': 'form-control file-input', 'accept': '.BEE'}}) }}
+                    <small class="form-text">対応ファイル: BEE (最大100M)</small>
                     {{ form_errors(form.asset) }}
                 </div>
 
@@ -30,6 +32,46 @@
             {{ form_end(form) }}
         </div>
     </div>
+
+    {# Fine Uploader (Oneup) integration #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fine-uploader/5.16.2/fine-uploader-new.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fine-uploader/5.16.2/fine-uploader.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var uploader = new qq.FineUploader({
+                element: document.getElementById('uploader'),
+                request: {
+                    endpoint: "{{ oneup_uploader_endpoint('gallery') }}"
+                },
+                chunking: {
+                    enabled: true,
+                    partSize: 10000000
+                },
+                callbacks: {
+                    onComplete: function(id, name, responseJSON) {
+                        if (responseJSON && responseJSON.success) {
+                            var finalName = responseJSON.uploaderName || name;
+                            var encryptionKey = document.querySelector('input[name="encryptionKey"]').value || '';
+                            fetch("{{ path('basisvr_asset_finalize') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({ filename: finalName, encryptionKey: encryptionKey })
+                            }).then(function(r){ return r.json(); }).then(function(data){
+                                if (data && data.storageKey) {
+                                    window.location.href = "{{ path('basisvr_asset_index') }}";
+                                } else {
+                                    alert('アップロードの確定に失敗しました');
+                                }
+                            }).catch(function(){ alert('ネットワークエラー'); });
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 
     <style>
         .asset-upload-container {

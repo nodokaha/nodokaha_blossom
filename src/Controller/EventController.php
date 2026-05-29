@@ -7,6 +7,8 @@ namespace App\Controller;
 use App\Entity\EventPost;
 use App\Form\EventPostType;
 use App\Repository\EventPostRepository;
+use App\Entity\EventComment;
+use App\Form\EventCommentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,6 +42,27 @@ class EventController extends AbstractController
 
         return $this->render('event/new.html.twig', [
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'basisvr_event_show', methods: ['GET', 'POST'])]
+    public function show(EventPost $post, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $comment = new EventComment();
+        $form = $this->createForm(EventCommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setPost($post);
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('basisvr_event_show', ['id' => $post->getId()]);
+        }
+
+        return $this->render('event/show.html.twig', [
+            'post' => $post,
+            'commentForm' => $form,
         ]);
     }
 }

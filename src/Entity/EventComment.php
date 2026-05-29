@@ -4,26 +4,18 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\EventPostRepository;
+use App\Repository\EventCommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use App\Entity\EventComment;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: EventPostRepository::class)]
-class EventPost
+#[ORM\Entity(repositoryClass: EventCommentRepository::class)]
+class EventComment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 140)]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 140)]
-    private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
@@ -36,33 +28,18 @@ class EventPost
     #[ORM\Column]
     private \DateTimeImmutable $publishedAt;
 
+    #[ORM\ManyToOne(targetEntity: EventPost::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?EventPost $post = null;
+
     public function __construct()
     {
         $this->publishedAt = new \DateTimeImmutable();
-        $this->comments = new ArrayCollection();
     }
-
-    /**
-     * @var Collection<int, EventComment>
-     */
-    #[ORM\OneToMany(mappedBy: 'post', targetEntity: EventComment::class, cascade: ['remove'], orphanRemoval: true)]
-    private Collection $comments;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
     }
 
     public function getContent(): ?string
@@ -101,31 +78,14 @@ class EventPost
         return $this;
     }
 
-    /**
-     * @return Collection<int, EventComment>
-     */
-    public function getComments(): Collection
+    public function getPost(): ?EventPost
     {
-        return $this->comments;
+        return $this->post;
     }
 
-    public function addComment(EventComment $comment): self
+    public function setPost(?EventPost $post): self
     {
-        if (! $this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setPost($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(EventComment $comment): self
-    {
-        if ($this->comments->removeElement($comment)) {
-            if ($comment->getPost() === $this) {
-                $comment->setPost(null);
-            }
-        }
+        $this->post = $post;
 
         return $this;
     }

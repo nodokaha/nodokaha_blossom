@@ -1,0 +1,12 @@
+oneup_uploader:
+    mappings:
+        gallery:
+            frontend: fineuploader
+            storage:
+                directory: '%kernel.project_dir%/public/uploads/tmp'
+            max_size: 104857600 # 100MB
+            enable_progress: true
+    chunks:
+        maxage: 86400
+        storage:
+            directory: '%kernel.cache_dir%/uploader/chunks'

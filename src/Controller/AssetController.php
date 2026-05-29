@@ -8,6 +8,8 @@ use App\Form\AssetUploadType;
 use App\Repository\AssetFileRepository;
 use App\Service\Asset\AssetStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,5 +66,31 @@ class AssetController extends AbstractController
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $asset->getOriginalName());
 
         return $response;
+    }
+
+    #[Route('/finalize', name: 'basisvr_asset_finalize', methods: ['POST'])]
+    public function finalize(Request $request, EntityManagerInterface $entityManager, AssetStorageService $assetStorageService): Response
+    {
+        $data = json_decode($request->getContent() ?: '{}', true);
+        $filename = $data['filename'] ?? $request->request->get('filename');
+        $encryptionKey = $data['encryptionKey'] ?? $request->request->get('encryptionKey');
+
+        if (! $filename || ! $encryptionKey) {
+            return new JsonResponse(['error' => 'missing_parameters'], 400);
+        }
+
+        $uploadDir = $this->getParameter('kernel.project_dir').'/public/uploads/tmp';
+        $path = $uploadDir.'/'.$filename;
+
+        if (!file_exists($path)) {
+            return new JsonResponse(['error' => 'file_not_found'], 404);
+        }
+
+        $uploadedFile = new UploadedFile($path, $filename, null, null, true);
+        $asset = $assetStorageService->store($uploadedFile, $encryptionKey);
+        $entityManager->persist($asset);
+        $entityManager->flush();
+
+        return new JsonResponse(['storageKey' => $asset->getStorageKey()]);
     }
 }
