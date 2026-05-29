@@ -40,7 +40,11 @@
                             <p style="font-size: 0.9rem; color: #374151; margin: 0.35rem 0 0;">人口 {{ status.population }}人 / 食料 {{ status.food }}t / 資金 {{ status.treasury }}億円</p>
                             <p style="font-size: 0.9rem; color: #374151; margin: 0.2rem 0 0;">発展段階: {{ status.prosperity }} ・ 状態: {{ status.danger }}</p>
                         {% endif %}
-                        <p style="margin-top:.75rem;"><a href="{{ path('app_garden_dashboard', { userId: garden.owner.id }) }}">この箱庭を観察する</a></p>
+                        {% if garden.owner is defined and garden.owner.id is defined and garden.owner.id %}
+                            <p style="margin-top:.75rem;"><a href="{{ path('app_garden_dashboard', { userId: garden.owner.id }) }}">この箱庭を観察する</a></p>
+                        {% else %}
+                            <p style="margin-top:.75rem;color:#94a3b8;">観察リンクなし</p>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>

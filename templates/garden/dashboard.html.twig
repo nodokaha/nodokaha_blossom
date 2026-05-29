@@ -22,14 +22,11 @@
         .stack-tile{background:#1f2937;border:1px solid #475569;border-radius:8px;padding:.4rem .6rem;font-size:.85rem}
     </style>
     <main class="garden-wrap">
-        <h1>
-            {{ owner.email }}さんの箱庭
-            {% if is_owner %}
-                <small style="font-size:0.85rem;color:#9ca3af;">管理画面</small>
-            {% else %}
-                <small style="font-size:0.85rem;color:#9ca3af;">観察モード</small>
-            {% endif %}
-        </h1>
+        {% if is_owner %}
+            <h1>{{ owner.email }}さん専用の箱庭管理画面</h1>
+        {% else %}
+            <h1>{{ owner.email }}さんの箱庭 <small style="font-size:0.85rem;color:#9ca3af;">観察モード</small></h1>
+        {% endif %}
         <p>ラボ情報を統合し、スタックも「成長タイル」として可視化しています。</p>
 
         <section class="panel">
