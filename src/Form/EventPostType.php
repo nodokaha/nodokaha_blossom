@@ -21,29 +21,29 @@ class EventPostType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'label' => 'タイトル',
-                'help' => '一覧で読みたくなる要点を140文字以内で入力してください。',
+                'help' => '見直し内容が分かる要点を140文字以内で入力してください。',
                 'attr' => [
                     'maxlength' => 140,
-                    'placeholder' => '例：6月 BasisVR ワールドツアー開催',
+                    'placeholder' => '例：検索体験の見直しと採用判断',
                     'autocomplete' => 'off',
                 ],
             ])
             ->add('authorName', TextType::class, [
-                'label' => '投稿者名',
+                'label' => 'レビュアー名',
                 'help' => '公開される名前です。個人情報は書きすぎないでください。',
                 'attr' => [
                     'maxlength' => 80,
-                    'placeholder' => '例：BasisVR運営',
+                    'placeholder' => '例：reviewer',
                     'autocomplete' => 'name',
                 ],
             ])
             ->add('content', TextareaType::class, [
                 'label' => '本文',
-                'help' => '日時・参加方法・注意事項を含めると参加者が迷いません。',
+                'help' => '変更理由、評価、懸念、次のアクションを含めると判断を追いやすくなります。',
                 'attr' => [
                     'rows' => 10,
                     'maxlength' => 5000,
-                    'placeholder' => "イベント概要\n開催日時\n参加方法\n注意事項",
+                    'placeholder' => "対象\n見直した理由\n良かった点\n懸念\n次のアクション",
                 ],
             ])
             ->add('website', TextType::class, [

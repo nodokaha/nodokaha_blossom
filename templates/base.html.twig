@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}NODOKAHA BLOSSOM{% endblock %}</title>
+        <title>{% block title %}プロジェクト見直しブログ{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>■</text></svg>">
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
@@ -17,16 +17,13 @@
     <body>
         <header class="retro-header">
             <nav class="retro-nav">
-                <a href="{{ path('app_home') }}" class="brand-link">NODOKAHA</a>
-                <a href="{{ path('app_home') }}">Portfolio</a>
-                <a href="{{ path('app_portfolio_profile') }}">人物</a>
-                <a href="{{ path('app_portfolio_routes') }}">導線</a>
+                <a href="{{ path('app_home') }}" class="brand-link">Review Log</a>
+                <a href="{{ path('basisvr_event_index') }}">レビュー一覧</a>
+                <a href="{{ path('basisvr_event_new') }}">投稿する</a>
                 <a href="{{ path('app_portfolio_secd_vm') }}">SECD VM</a>
-                <a href="{{ path('app_portfolio_bloom_signal') }}">Game</a>
-                <a href="{{ path('app_garden_list') }}">箱庭一覧</a>
+                <a href="{{ path('app_portfolio_bloom_signal') }}">Review Signal</a>
 
                 {% if app.user %}
-                    <a href="{{ path('app_garden_dashboard', { userId: app.user.id }) }}">マイ箱庭</a>
                     <span class="retro-user">{{ app.user.userIdentifier }}</span>
                     <form method="post" action="{{ path('app_logout') }}" class="retro-logout-form">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">

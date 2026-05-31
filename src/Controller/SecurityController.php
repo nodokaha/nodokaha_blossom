@@ -13,7 +13,7 @@ final class SecurityController extends AbstractController
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser() !== null) {
-            return $this->redirectToRoute('app_garden_dashboard', ['userId' => $this->getUser()->getId()]);
+            return $this->redirectToRoute('basisvr_event_index');
         }
 
         return $this->render('security/login.html.twig', [

@@ -12,34 +12,34 @@ final class PortfolioControllerTest extends WebTestCase
         static::ensureKernelShutdown();
     }
 
-    public function testPortfolioHomeDisplaysPrimaryRoutes(): void
+    public function testReviewHomeDisplaysPrimaryRoutes(): void
     {
         $client = static::createClient();
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'NODOKAHA BLOSSOM');
+        $this->assertSelectorTextContains('h1', 'プロジェクト見直しブログ');
         $this->assertSelectorTextContains('body', 'SECD VM');
-        $this->assertSelectorTextContains('body', 'BLOOM SIGNAL');
+        $this->assertSelectorTextContains('body', 'REVIEW SIGNAL');
     }
 
     public function testSecdVmPageRunsDefaultProgram(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/portfolio/secd-vm');
+        $client->request('GET', '/tools/secd-vm');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'SECD VM 簡易インタプリタ');
-        $this->assertSelectorTextContains('body', '開花: プロトタイプへ');
+        $this->assertSelectorTextContains('body', '公開: 読み直し完了');
     }
 
-    public function testBloomSignalPageDisplaysScore(): void
+    public function testReviewSignalPageDisplaysScore(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/portfolio/bloom-signal');
+        $client->request('GET', '/tools/review-signal');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'BLOOM SIGNAL');
+        $this->assertSelectorTextContains('h1', 'REVIEW SIGNAL');
         $this->assertSelectorTextContains('body', 'Score');
     }
 }
