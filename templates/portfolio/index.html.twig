@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}NODOKAHA Portfolio{% endblock %}
+
+{% block body %}
+<main class="portfolio-shell">
+    <section class="portfolio-hero">
+        <div>
+            <p class="eyebrow">PORTFOLIO / PLAYABLE ROUTES</p>
+            <h1>{{ profile.name }} BLOSSOM</h1>
+            <p class="lead">{{ profile.statement }}</p>
+            <div class="hero-actions">
+                <a class="button-link" href="{{ path('app_portfolio_profile') }}">人物ページへ</a>
+                <a class="button-link secondary" href="{{ path('app_portfolio_bloom_signal') }}">新作ミニゲームを遊ぶ</a>
+            </div>
+        </div>
+        <aside class="hero-card" aria-label="portfolio status">
+            <span class="status-dot"></span>
+            <strong>Now exhibiting</strong>
+            <p>箱庭、SECD VM、イベント掲示板を、作品集の入口から巡回できるように再編しました。</p>
+        </aside>
+    </section>
+
+    <section class="route-grid" aria-label="主要導線">
+        {% for link in links %}
+            <article class="route-card">
+                <span class="route-number">{{ '%02d'|format(loop.index) }}</span>
+                <h2>{{ link.label }}</h2>
+                <p>{{ link.description }}</p>
+                <a href="{{ path(link.route) }}">開く</a>
+            </article>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}

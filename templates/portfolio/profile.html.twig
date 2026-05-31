@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}NODOKAHA{% endblock %}
+
+{% block body %}
+<main class="portfolio-shell narrow">
+    <section class="portfolio-panel">
+        <p class="eyebrow">PERSON</p>
+        <h1>{{ profile.name }}</h1>
+        <p class="lead">{{ profile.title }}</p>
+        <p>{{ profile.statement }}</p>
+    </section>
+
+    <section class="route-grid two-columns">
+        <article class="route-card">
+            <h2>制作の癖</h2>
+            <ul class="portfolio-list">
+                {% for trait in profile.traits %}
+                    <li>{{ trait }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="route-card">
+            <h2>展示中の作品</h2>
+            {% for work in profile.works %}
+                <p><strong>{{ work.label }}</strong><br>{{ work.text }}</p>
+            {% endfor %}
+        </article>
+    </section>
+</main>
+{% endblock %}

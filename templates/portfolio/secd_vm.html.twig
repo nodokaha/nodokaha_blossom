@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SECD VM{% endblock %}
+
+{% block body %}
+<main class="portfolio-shell">
+    <section class="portfolio-panel">
+        <p class="eyebrow">STACK / ENVIRONMENT / CONTROL / DUMP</p>
+        <h1>SECD VM 簡易インタプリタ</h1>
+        <p class="lead">LDC, LD, ST, ADD, SEL, JOIN, OUT などの命令で、小さなプログラムを実行できます。</p>
+    </section>
+
+    <section class="vm-layout">
+        <form method="post" class="portfolio-panel vm-editor">
+            <input type="hidden" name="_token" value="{{ csrf_token('secd_vm_run') }}">
+            <label for="program">Program</label>
+            <textarea id="program" name="program" rows="14">{{ program }}</textarea>
+            <button type="submit">RUN SECD</button>
+            <p class="hint">分岐は <code>SEL then命令; JOIN | else命令; JOIN</code> の形で書けます。</p>
+        </form>
+
+        <aside class="portfolio-panel vm-result">
+            <h2>Registers</h2>
+            {% if result.error %}<p class="error">{{ result.error }}</p>{% endif %}
+            <dl class="registers">
+                <dt>Stack</dt><dd><code>{{ result.stack|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</code></dd>
+                <dt>Environment</dt><dd><code>{{ result.environment|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</code></dd>
+                <dt>Control</dt><dd><code>{{ result.control|length }} instruction(s)</code></dd>
+                <dt>Dump</dt><dd><code>{{ result.dump|length }} frame(s)</code></dd>
+                <dt>Output</dt><dd><code>{{ result.output|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</code></dd>
+            </dl>
+        </aside>
+    </section>
+
+    <section class="portfolio-panel">
+        <h2>Trace</h2>
+        <ol class="trace-list">
+            {% for row in result.trace|slice(0, 12) %}
+                <li><code>{{ row.instruction }}</code> → S={{ row.stack|json_encode(constant('JSON_UNESCAPED_UNICODE')) }} / E={{ row.environment|json_encode(constant('JSON_UNESCAPED_UNICODE')) }}</li>
+            {% endfor %}
+        </ol>
+    </section>
+</main>
+{% endblock %}

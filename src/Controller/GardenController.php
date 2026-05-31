@@ -13,12 +13,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class GardenController extends AbstractController
 {
-    #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function home(): Response
-    {
-        return $this->redirectToRoute('app_garden_list');
-    }
-
     #[Route('/gardens', name: 'app_garden_list', methods: ['GET'])]
     public function list(GardenRepository $gardenRepository, StoryVmStateService $storyVmStateService, GardenBalanceService $gardenBalanceService): Response
     {
