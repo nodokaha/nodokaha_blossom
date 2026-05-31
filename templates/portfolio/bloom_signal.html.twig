@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}BLOOM SIGNAL{% endblock %}
+
+{% block body %}
+<main class="portfolio-shell">
+    <section class="portfolio-panel game-hero">
+        <p class="eyebrow">ORIGINAL MINI GAME</p>
+        <h1>BLOOM SIGNAL</h1>
+        <p class="lead">4つの合図を並べて、ポートフォリオの導線を開花させる短編ゲームです。開花・共鳴・揺らぎの均衡でエンディングが変わります。</p>
+    </section>
+
+    <section class="vm-layout">
+        <form method="post" class="portfolio-panel">
+            <h2>合図を選ぶ</h2>
+            {% for index in 0..3 %}
+                <label for="move_{{ index }}">Step {{ index + 1 }}</label>
+                <select id="move_{{ index }}" name="moves[]">
+                    {% for key, label in move_catalog %}
+                        <option value="{{ key }}" {{ moves[index]|default('') == key ? 'selected' : '' }}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            {% endfor %}
+            <button type="submit">導線を育てる</button>
+        </form>
+
+        <aside class="portfolio-panel score-card">
+            <h2>Score {{ game.score }}</h2>
+            <div class="meter"><span style="width: {{ game.score > 60 ? 100 : (game.score / 60 * 100) }}%"></span></div>
+            <p>開花 {{ game.bloom }} / 共鳴 {{ game.resonance }} / 揺らぎ {{ game.drift }}</p>
+            <p><strong>{{ game.ending }}</strong></p>
+        </aside>
+    </section>
+
+    <section class="portfolio-panel">
+        <h2>Log</h2>
+        <ol class="trace-list">
+            {% for line in game.log %}<li>{{ line }}</li>{% endfor %}
+        </ol>
+    </section>
+</main>
+{% endblock %}

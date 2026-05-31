@@ -959,3 +959,181 @@ small,
         margin-left: 0;
     }
 }
+
+/* Portfolio entrance */
+.portfolio-shell {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 2rem auto 4rem;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.portfolio-shell.narrow {
+    width: min(920px, calc(100% - 2rem));
+}
+
+.portfolio-hero,
+.portfolio-panel,
+.route-card {
+    background: linear-gradient(135deg, rgba(37, 26, 61, 0.96), rgba(18, 12, 31, 0.96));
+    border: 3px solid var(--retro-border-dark);
+    box-shadow: 0 0 0 3px var(--retro-border-light), 0 16px 0 rgba(0, 0, 0, 0.32);
+}
+
+.portfolio-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 1.5rem;
+    align-items: stretch;
+    padding: clamp(1.25rem, 4vw, 3rem);
+    overflow: hidden;
+    position: relative;
+}
+
+.portfolio-hero::before,
+.game-hero::before {
+    content: "";
+    position: absolute;
+    inset: auto -10% -35% 35%;
+    height: 220px;
+    background: radial-gradient(circle, rgba(111, 255, 233, 0.22), transparent 68%);
+    pointer-events: none;
+}
+
+.eyebrow {
+    color: var(--retro-border-light);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+}
+
+.lead {
+    color: var(--retro-text);
+    font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+.hero-card,
+.portfolio-panel,
+.route-card {
+    padding: 1.25rem;
+}
+
+.hero-card {
+    background: rgba(15, 10, 28, 0.78);
+    border: 2px dashed var(--retro-accent);
+}
+
+.status-dot {
+    display: inline-block;
+    width: 0.8rem;
+    height: 0.8rem;
+    margin-right: 0.4rem;
+    background: var(--retro-accent);
+    box-shadow: 0 0 18px var(--retro-accent);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.button-link,
+.route-card a {
+    display: inline-block;
+    padding: 0.65rem 0.9rem;
+    color: #160f25;
+    background: var(--retro-accent);
+    border: 3px solid var(--retro-border-light);
+    text-shadow: none;
+    font-weight: 700;
+}
+
+.button-link.secondary {
+    background: var(--retro-danger);
+}
+
+.route-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.1rem;
+    margin-top: 1.5rem;
+}
+
+.route-grid.two-columns {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.route-number {
+    color: var(--retro-border-light);
+}
+
+.portfolio-list {
+    padding-left: 1.1rem;
+}
+
+.vm-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+}
+
+.vm-editor textarea,
+.portfolio-panel textarea,
+.portfolio-panel select {
+    width: 100%;
+    margin: 0.35rem 0 0.9rem;
+}
+
+.hint,
+.error {
+    font-size: 0.85rem;
+}
+
+.error {
+    color: var(--retro-danger);
+}
+
+.registers dt {
+    color: var(--retro-border-light);
+    margin-top: 0.8rem;
+}
+
+.registers dd {
+    margin-left: 0;
+    overflow-wrap: anywhere;
+}
+
+.trace-list {
+    display: grid;
+    gap: 0.6rem;
+    padding-left: 1.4rem;
+}
+
+.score-card .meter {
+    width: 100%;
+    height: 1rem;
+    background: #090614;
+    border: 2px solid var(--retro-border-light);
+    margin: 1rem 0;
+}
+
+.score-card .meter span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--retro-danger), var(--retro-accent));
+}
+
+@media (max-width: 800px) {
+    .portfolio-hero,
+    .vm-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .retro-user {
+        margin-left: 0;
+    }
+}

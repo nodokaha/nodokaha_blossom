@@ -2,20 +2,27 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}NODOKAHA BLOSSOM{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>■</text></svg>">
         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
 
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% if app.environment != 'test' %}
+                {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% endif %}
         {% endblock %}
     </head>
     <body>
         <header class="retro-header">
             <nav class="retro-nav">
-                <a href="{{ path('app_home') }}" class="brand-link">NODOKAHA BLOSSOM</a>
-                <a href="{{ path('app_home') }}">トップ</a>
+                <a href="{{ path('app_home') }}" class="brand-link">NODOKAHA</a>
+                <a href="{{ path('app_home') }}">Portfolio</a>
+                <a href="{{ path('app_portfolio_profile') }}">人物</a>
+                <a href="{{ path('app_portfolio_routes') }}">導線</a>
+                <a href="{{ path('app_portfolio_secd_vm') }}">SECD VM</a>
+                <a href="{{ path('app_portfolio_bloom_signal') }}">Game</a>
                 <a href="{{ path('app_garden_list') }}">箱庭一覧</a>
 
                 {% if app.user %}
