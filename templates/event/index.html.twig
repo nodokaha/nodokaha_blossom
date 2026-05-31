@@ -8,7 +8,7 @@
     <div>
       <p class="eyebrow">Community Journal</p>
       <h1>BasisVR イベントブログ</h1>
-      <p class="hero-copy">最新のお知らせ、イベント告知、参加者コメントを一か所で確認できます。投稿前の要点整理とコメント導線を強化し、初めての人も迷わず参加できるブログにしました。</p>
+      <p class="hero-copy">最新のお知らせ、イベント告知、参加者コメントを一か所で確認できます。エディターのワークスペースのように、必要な情報を一覧から素早く読み取り、詳細へ移動できます。</p>
       <div class="hero-actions" aria-label="主要アクション">
         <a class="blog-button" href="{{ path('basisvr_event_new') }}">新規投稿する</a>
         <a class="ghost-button" href="#post-list">投稿一覧を見る</a>
@@ -29,29 +29,35 @@
       <strong>{{ posts|length }}</strong>
       <span>件の公開投稿</span>
     </div>
-    <p>新着順で表示しています。詳細ページからコメントできます。</p>
+    <p>新着順で表示しています。各行のコメント数から反応状況も確認できます。</p>
   </section>
 
-  <section id="post-list" class="blog-grid" aria-label="イベント投稿一覧">
+  <section id="post-list" class="post-list" aria-label="イベント投稿一覧">
     {% for post in posts %}
-      <article class="post-card">
-        <div class="post-card-header">
-          <span class="post-category">Event</span>
-          <time class="post-meta" datetime="{{ post.publishedAt|date('c') }}">{{ post.publishedAt|date('Y.m.d H:i') }}</time>
-        </div>
-        <h2 class="post-title">
-          {% if post.id is defined and post.id %}
-            <a href="{{ path('basisvr_event_show', {id: post.id}) }}">{{ post.title }}</a>
-          {% else %}
-            {{ post.title }}
-          {% endif %}
-        </h2>
-        <p class="post-excerpt">{{ post.content[:220] ~ (post.content|length > 220 ? '…' : '') }}</p>
-        <div class="post-footer">
-          <span class="post-author">{{ post.authorName }}</span>
-          {% if post.id is defined and post.id %}
-            <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">詳細とコメントへ →</a>
-          {% endif %}
+      {% set plainContent = post.content|striptags %}
+      {% set excerpt = plainContent|slice(0, 180) ~ (plainContent|length > 180 ? '…' : '') %}
+      <article class="post-list-item">
+        <div class="post-list-gutter" aria-hidden="true">{{ '%02d'|format(loop.index) }}</div>
+        <div class="post-list-body">
+          <div class="post-card-header">
+            <span class="post-category">event.md</span>
+            <time class="post-meta" datetime="{{ post.publishedAt|date('c') }}">{{ post.publishedAt|date('Y.m.d H:i') }}</time>
+          </div>
+          <h2 class="post-title">
+            {% if post.id is defined and post.id %}
+              <a href="{{ path('basisvr_event_show', {id: post.id}) }}">{{ post.title }}</a>
+            {% else %}
+              {{ post.title }}
+            {% endif %}
+          </h2>
+          <p class="post-excerpt">{{ excerpt }}</p>
+          <div class="post-footer">
+            <span class="post-author">@{{ post.authorName }}</span>
+            <span class="post-comment-count">{{ post.comments|length }} comments</span>
+            {% if post.id is defined and post.id %}
+              <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">詳細とコメントへ →</a>
+            {% endif %}
+          </div>
         </div>
       </article>
     {% else %}

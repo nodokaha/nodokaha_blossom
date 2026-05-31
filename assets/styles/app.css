@@ -724,3 +724,238 @@ small,
         text-align: center;
     }
 }
+
+/* Editor-style BasisVR blog theme */
+.basisvr-shell {
+    --editor-bg: #1e1e1e;
+    --editor-sidebar: #252526;
+    --editor-panel: #2d2d30;
+    --editor-line: #3e3e42;
+    --editor-line-active: #37373d;
+    --editor-text: #d4d4d4;
+    --editor-muted: #9cdcfe;
+    --editor-comment: #6a9955;
+    --editor-accent: #007acc;
+    --editor-accent-strong: #569cd6;
+    --editor-warning: #dcdcaa;
+    --editor-pink: #c586c0;
+    --retro-bg: var(--editor-bg);
+    --retro-surface: var(--editor-sidebar);
+    --retro-border-light: var(--editor-accent);
+    --retro-border-dark: var(--editor-line);
+    --retro-text: var(--editor-text);
+    --retro-muted: #858585;
+    --retro-accent: var(--editor-muted);
+    --retro-danger: #f48771;
+    background: var(--editor-bg);
+    color: var(--editor-text);
+}
+
+.basisvr-shell .basisvr-header,
+.basisvr-shell .blog-page,
+.basisvr-shell .blog-hero,
+.basisvr-shell .article-hero,
+.basisvr-shell .post-content,
+.basisvr-shell .comment-card,
+.basisvr-shell .form-panel,
+.basisvr-shell .empty-state,
+.basisvr-shell .blog-toolbar,
+.basisvr-shell .breadcrumb,
+.basisvr-shell .form-card,
+.basisvr-shell .hero-checklist {
+    background: var(--editor-sidebar);
+    border: 1px solid var(--editor-line);
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.basisvr-shell .basisvr-header {
+    border-bottom: 1px solid var(--editor-line);
+}
+
+.basisvr-shell .basisvr-brand,
+.basisvr-shell h1,
+.basisvr-shell h2,
+.basisvr-shell h3,
+.basisvr-shell .blog-toolbar strong {
+    color: var(--editor-muted);
+    text-shadow: none;
+}
+
+.basisvr-shell a {
+    color: var(--editor-muted);
+    text-shadow: none;
+}
+
+.basisvr-shell a:hover,
+.basisvr-shell a:focus-visible {
+    color: var(--editor-text);
+    border-bottom-color: var(--editor-accent);
+}
+
+.basisvr-shell .blog-page {
+    max-width: 1080px;
+    padding: 1.25rem;
+}
+
+.basisvr-shell .blog-page::before,
+.basisvr-shell .blog-hero::after,
+.basisvr-shell .article-hero::after,
+.basisvr-shell .post-card::before,
+.basisvr-shell .comment-card::before {
+    content: none;
+}
+
+.basisvr-shell .blog-hero,
+.basisvr-shell .article-hero {
+    border-top: 3px solid var(--editor-accent);
+}
+
+.basisvr-shell .eyebrow,
+.basisvr-shell .post-category {
+    color: var(--editor-comment);
+}
+
+.basisvr-shell .hero-copy,
+.basisvr-shell .post-excerpt,
+.basisvr-shell .post-content .content-body,
+.basisvr-shell .comment-body {
+    color: var(--editor-text);
+}
+
+.basisvr-shell .blog-button,
+.basisvr-shell button.blog-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--editor-accent);
+    background: var(--editor-accent);
+    color: #ffffff;
+    box-shadow: none;
+    filter: none;
+}
+
+.basisvr-shell .blog-button:hover,
+.basisvr-shell .blog-button:focus-visible,
+.basisvr-shell button.blog-button:hover,
+.basisvr-shell button.blog-button:focus-visible {
+    transform: none;
+    background: #0e639c;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.basisvr-shell .ghost-button {
+    border: 1px solid var(--editor-line);
+    background: var(--editor-panel);
+    color: var(--editor-text);
+}
+
+.basisvr-shell .ghost-button:hover,
+.basisvr-shell .ghost-button:focus-visible {
+    background: var(--editor-line-active);
+    color: var(--editor-text);
+}
+
+.basisvr-shell .hero-checklist {
+    border-left: 3px solid var(--editor-warning);
+}
+
+.basisvr-shell .post-list {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.basisvr-shell .post-list-item {
+    display: grid;
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+    background: var(--editor-sidebar);
+    border: 1px solid var(--editor-line);
+    box-shadow: none;
+    transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.basisvr-shell .post-list-item:hover,
+.basisvr-shell .post-list-item:focus-within {
+    background: var(--editor-line-active);
+    border-color: var(--editor-accent);
+}
+
+.basisvr-shell .post-list-gutter {
+    padding: 1rem 0.9rem;
+    background: var(--editor-bg);
+    border-right: 1px solid var(--editor-line);
+    color: #858585;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.basisvr-shell .post-list-body {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+}
+
+.basisvr-shell .post-card-header,
+.basisvr-shell .post-footer {
+    color: #858585;
+}
+
+.basisvr-shell .post-title {
+    margin-top: 0.35rem;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    text-transform: none;
+}
+
+.basisvr-shell .post-title a {
+    color: var(--editor-warning);
+}
+
+.basisvr-shell .post-title a:hover,
+.basisvr-shell .post-title a:focus-visible {
+    color: var(--editor-muted);
+}
+
+.basisvr-shell .post-author {
+    color: var(--editor-pink);
+}
+
+.basisvr-shell .post-comment-count {
+    color: var(--editor-comment);
+}
+
+.basisvr-shell .more-link {
+    margin-left: auto;
+    color: var(--editor-muted);
+}
+
+.basisvr-shell .blog-form input,
+.basisvr-shell .blog-form textarea,
+.basisvr-shell .form-card input,
+.basisvr-shell .form-card textarea {
+    background: var(--editor-bg);
+    border: 1px solid var(--editor-line);
+    color: var(--editor-text);
+}
+
+.basisvr-shell .blog-form input:focus,
+.basisvr-shell .blog-form textarea:focus {
+    border-color: var(--editor-accent);
+    box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.32);
+}
+
+@media (max-width: 760px) {
+    .basisvr-shell .post-list-item {
+        grid-template-columns: 1fr;
+    }
+
+    .basisvr-shell .post-list-gutter {
+        border-right: 0;
+        border-bottom: 1px solid var(--editor-line);
+        text-align: left;
+    }
+
+    .basisvr-shell .more-link {
+        margin-left: 0;
+    }
+}
