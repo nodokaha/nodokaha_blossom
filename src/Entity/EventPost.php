@@ -48,6 +48,7 @@ class EventPost
      * @var Collection<int, EventComment>
      */
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: EventComment::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['publishedAt' => 'ASC'])]
     private Collection $comments;
 
     public function getId(): ?int
