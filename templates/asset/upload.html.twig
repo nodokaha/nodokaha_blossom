@@ -19,6 +19,13 @@
                 </div>
 
                 <div class="form-group">
+                    {{ form_label(form.assetType, '種別', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.assetType, {'attr': {'class': 'form-control asset-type-input'}}) }}
+                    <small class="form-text">プロップ、ワールド、アバターから選択してください</small>
+                    {{ form_errors(form.assetType) }}
+                </div>
+
+                <div class="form-group">
                     {{ form_label(form.encryptionKey, '暗号化キー', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.encryptionKey, {'attr': {'class': 'form-control encryption-key-input'}}) }}
                     <small class="form-text">このキーは他のサービスで利用できます</small>
@@ -51,14 +58,17 @@
                     onComplete: function(id, name, responseJSON) {
                         if (responseJSON && responseJSON.success) {
                             var finalName = responseJSON.uploaderName || name;
-                            var encryptionKey = document.querySelector('input[name="encryptionKey"]').value || '';
+                            var encryptionKeyInput = document.getElementById('{{ form.encryptionKey.vars.id|e('js') }}');
+                            var assetTypeInput = document.getElementById('{{ form.assetType.vars.id|e('js') }}');
+                            var encryptionKey = encryptionKeyInput ? encryptionKeyInput.value : '';
+                            var assetType = assetTypeInput ? assetTypeInput.value : '';
                             fetch("{{ path('basisvr_asset_finalize') }}", {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'X-Requested-With': 'XMLHttpRequest'
                                 },
-                                body: JSON.stringify({ filename: finalName, encryptionKey: encryptionKey })
+                                body: JSON.stringify({ filename: finalName, encryptionKey: encryptionKey, assetType: assetType })
                             }).then(function(r){ return r.json(); }).then(function(data){
                                 if (data && data.storageKey) {
                                     window.location.href = "{{ path('basisvr_asset_index') }}";
@@ -110,6 +120,7 @@
         }
 
         .file-input,
+        .asset-type-input,
         .encryption-key-input {
             display: block;
             width: 100%;
@@ -132,6 +143,7 @@
             font-family: 'Courier New', monospace;
         }
 
+        .asset-type-input:focus,
         .encryption-key-input:focus {
             outline: none;
             border-color: #007bff;

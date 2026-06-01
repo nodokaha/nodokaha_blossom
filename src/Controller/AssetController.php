@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\AssetFile;
 use App\Form\AssetUploadType;
 use App\Repository\AssetFileRepository;
 use App\Service\Asset\AssetStorageService;
@@ -38,8 +39,9 @@ class AssetController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $uploaded = $form->get('asset')->getData();
             $encryptionKey = $form->get('encryptionKey')->getData();
-            if ($uploaded !== null && $encryptionKey !== null) {
-                $asset = $assetStorageService->store($uploaded, $encryptionKey);
+            $assetType = $form->get('assetType')->getData();
+            if ($uploaded !== null && $encryptionKey !== null && AssetFile::isValidAssetType($assetType)) {
+                $asset = $assetStorageService->store($uploaded, $encryptionKey, $assetType);
                 $entityManager->persist($asset);
                 $entityManager->flush();
 
@@ -72,11 +74,20 @@ class AssetController extends AbstractController
     public function finalize(Request $request, EntityManagerInterface $entityManager, AssetStorageService $assetStorageService): Response
     {
         $data = json_decode($request->getContent() ?: '{}', true);
+        if (! is_array($data)) {
+            $data = [];
+        }
+
         $filename = $data['filename'] ?? $request->request->get('filename');
         $encryptionKey = $data['encryptionKey'] ?? $request->request->get('encryptionKey');
+        $assetType = $data['assetType'] ?? $request->request->get('assetType');
 
-        if (! $filename || ! $encryptionKey) {
+        if (! $filename || ! $encryptionKey || ! $assetType) {
             return new JsonResponse(['error' => 'missing_parameters'], 400);
+        }
+
+        if (! AssetFile::isValidAssetType($assetType)) {
+            return new JsonResponse(['error' => 'invalid_asset_type'], 400);
         }
 
         $uploadDir = $this->getParameter('kernel.project_dir').'/public/uploads/tmp';
@@ -87,7 +98,7 @@ class AssetController extends AbstractController
         }
 
         $uploadedFile = new UploadedFile($path, $filename, null, null, true);
-        $asset = $assetStorageService->store($uploadedFile, $encryptionKey);
+        $asset = $assetStorageService->store($uploadedFile, $encryptionKey, $assetType);
         $entityManager->persist($asset);
         $entityManager->flush();
 
