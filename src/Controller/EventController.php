@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/reviews')]
+#[Route('/basisvr/contents')]
 class EventController extends AbstractController
 {
     #[Route('', name: 'basisvr_event_index', methods: ['GET'])]
@@ -39,7 +39,7 @@ class EventController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->addFlash('success', 'レビュー記事を公開しました。');
+            $this->addFlash('success', 'BasisVRコンテンツを公開しました。');
             $entityManager->persist($post);
             $entityManager->flush();
 

@@ -1,46 +1,46 @@
 {% extends 'basisvr_base.html.twig' %}
 
-{% block title %}プロジェクト見直しブログ{% endblock %}
+{% block title %}BasisVR コンテンツ投稿{% endblock %}
 
 {% block body %}
 <main id="basisvr-main" class="blog-page">
   <section class="blog-hero">
     <div>
-      <p class="eyebrow">Project Review Journal</p>
-      <h1>プロジェクト見直しブログ</h1>
-      <p class="hero-copy">実装した機能、採用した設計、次に直すべき課題をレビュー記事として蓄積します。読者が判断理由と改善余地を素早く追えるよう、一覧から本文とコメントへ直行できます。</p>
+      <p class="eyebrow">BasisVR Contents</p>
+      <h1>BasisVR コンテンツ投稿</h1>
+      <p class="hero-copy">Prop、World、AvatarなどのBasisVR向けコンテンツを、説明・関連アセット・タグと一緒に共有します。使い方や同梱物を一覧から確認できます。</p>
       <div class="hero-actions" aria-label="主要アクション">
-        <a class="blog-button" href="{{ path('basisvr_event_new') }}">レビューを投稿する</a>
-        <a class="ghost-button" href="#post-list">記事一覧を見る</a>
+        <a class="blog-button" href="{{ path('basisvr_event_new') }}">コンテンツを投稿する</a>
+        <a class="ghost-button" href="#post-list">投稿一覧を見る</a>
       </div>
     </div>
-    <aside class="hero-checklist" aria-label="レビュー投稿時の確認事項">
-      <h2>レビュー観点</h2>
+    <aside class="hero-checklist" aria-label="コンテンツ投稿時の確認事項">
+      <h2>投稿に含める情報</h2>
       <ul>
-        <li>何を見直したかを明記</li>
-        <li>採用理由と懸念を分けて記録</li>
-        <li>次の改善アクションを残す</li>
+        <li>Prop / World / Avatar の種別</li>
+        <li>利用シーンと導入手順</li>
+        <li>関連アセットと検索用タグ</li>
       </ul>
     </aside>
   </section>
 
-  <section class="blog-toolbar" aria-label="ブログ概要">
+  <section class="blog-toolbar" aria-label="コンテンツ投稿概要">
     <div>
       <strong>{{ posts|length }}</strong>
-      <span>件の公開レビュー</span>
+      <span>件の公開コンテンツ</span>
     </div>
-    <p>新着順で表示しています。各記事のコメント数から追加検討の状況も確認できます。</p>
+    <p>新着順で表示しています。種別、タグ、コメント数からBasisVR内で使いたい投稿を探せます。</p>
   </section>
 
-  <section id="post-list" class="post-list" aria-label="レビュー記事一覧">
+  <section id="post-list" class="post-list" aria-label="BasisVRコンテンツ一覧">
     {% for post in posts %}
-      {% set plainContent = post.content|striptags %}
-      {% set excerpt = plainContent|slice(0, 180) ~ (plainContent|length > 180 ? '…' : '') %}
+      {% set plainDescription = post.description|striptags %}
+      {% set excerpt = plainDescription|slice(0, 180) ~ (plainDescription|length > 180 ? '…' : '') %}
       <article class="post-list-item">
         <div class="post-list-gutter" aria-hidden="true">{{ '%02d'|format(loop.index) }}</div>
         <div class="post-list-body">
           <div class="post-card-header">
-            <span class="post-category">review.md</span>
+            <span class="post-category">{{ post.contentTypeLabel }}</span>
             <time class="post-meta" datetime="{{ post.publishedAt|date('c') }}">{{ post.publishedAt|date('Y.m.d H:i') }}</time>
           </div>
           <h2 class="post-title">
@@ -51,20 +51,25 @@
             {% endif %}
           </h2>
           <p class="post-excerpt">{{ excerpt }}</p>
+          {% if post.tags is not empty %}
+            <div class="post-tags" aria-label="タグ">
+              {% for tag in post.tags %}<span>#{{ tag }}</span>{% endfor %}
+            </div>
+          {% endif %}
           <div class="post-footer">
             <span class="post-author">@{{ post.authorName }}</span>
             <span class="post-comment-count">{{ post.comments|length }} comments</span>
             {% if post.id is defined and post.id %}
-              <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">本文とコメントへ →</a>
+              <a class="more-link" href="{{ path('basisvr_event_show', {id: post.id}) }}">詳細とコメントへ →</a>
             {% endif %}
           </div>
         </div>
       </article>
     {% else %}
       <div class="empty-state card">
-        <h2>まだレビュー記事はありません</h2>
-        <p>最初の見直しメモを投稿して、プロジェクト判断の履歴を残しましょう。</p>
-        <a class="blog-button" href="{{ path('basisvr_event_new') }}">最初のレビューを書く</a>
+        <h2>まだコンテンツ投稿はありません</h2>
+        <p>最初のBasisVRコンテンツを投稿して、使い方や関連アセットを共有しましょう。</p>
+        <a class="blog-button" href="{{ path('basisvr_event_new') }}">最初のコンテンツを投稿</a>
       </div>
     {% endfor %}
   </section>

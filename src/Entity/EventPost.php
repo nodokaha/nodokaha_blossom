@@ -15,6 +15,30 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EventPostRepository::class)]
 class EventPost
 {
+    public const CONTENT_TYPE_PROP = 'prop';
+    public const CONTENT_TYPE_WORLD = 'world';
+    public const CONTENT_TYPE_AVATAR = 'avatar';
+
+    /** @return array<string, string> */
+    public static function contentTypeChoices(): array
+    {
+        return [
+            'Prop' => self::CONTENT_TYPE_PROP,
+            'World' => self::CONTENT_TYPE_WORLD,
+            'Avatar' => self::CONTENT_TYPE_AVATAR,
+        ];
+    }
+
+    /** @return array<string, string> */
+    public static function contentTypeLabels(): array
+    {
+        return [
+            self::CONTENT_TYPE_PROP => 'Prop',
+            self::CONTENT_TYPE_WORLD => 'World',
+            self::CONTENT_TYPE_AVATAR => 'Avatar',
+        ];
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -28,7 +52,12 @@ class EventPost
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 5000)]
-    private ?string $content = null;
+    private ?string $description = null;
+
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [self::CONTENT_TYPE_PROP, self::CONTENT_TYPE_WORLD, self::CONTENT_TYPE_AVATAR])]
+    private string $contentType = self::CONTENT_TYPE_PROP;
 
     #[ORM\Column(length: 80)]
     #[Assert\NotBlank]
@@ -38,11 +67,19 @@ class EventPost
     #[ORM\Column]
     private \DateTimeImmutable $publishedAt;
 
-    public function __construct()
-    {
-        $this->publishedAt = new \DateTimeImmutable();
-        $this->comments = new ArrayCollection();
-    }
+    /**
+     * @var list<string>
+     */
+    #[ORM\Column(type: Types::JSON)]
+    #[Assert\All([new Assert\Type('string'), new Assert\Length(max: 255)])]
+    private array $relatedAssets = [];
+
+    /**
+     * @var list<string>
+     */
+    #[ORM\Column(type: Types::JSON)]
+    #[Assert\All([new Assert\Type('string'), new Assert\Length(max: 40)])]
+    private array $tags = [];
 
     /**
      * @var Collection<int, EventComment>
@@ -50,6 +87,12 @@ class EventPost
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: EventComment::class, cascade: ['remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['publishedAt' => 'ASC'])]
     private Collection $comments;
+
+    public function __construct()
+    {
+        $this->publishedAt = new \DateTimeImmutable();
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,16 +111,33 @@ class EventPost
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getDescription(): ?string
     {
-        return $this->content;
+        return $this->description;
     }
 
-    public function setContent(string $content): self
+    public function setDescription(string $description): self
     {
-        $this->content = $content;
+        $this->description = $description;
 
         return $this;
+    }
+
+    public function getContentType(): string
+    {
+        return $this->contentType;
+    }
+
+    public function setContentType(string $contentType): self
+    {
+        $this->contentType = $contentType;
+
+        return $this;
+    }
+
+    public function getContentTypeLabel(): string
+    {
+        return self::contentTypeLabels()[$this->contentType] ?? $this->contentType;
     }
 
     public function getAuthorName(): ?string
@@ -100,6 +160,34 @@ class EventPost
     public function setPublishedAt(\DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    /** @return list<string> */
+    public function getRelatedAssets(): array
+    {
+        return $this->relatedAssets;
+    }
+
+    /** @param list<string> $relatedAssets */
+    public function setRelatedAssets(array $relatedAssets): self
+    {
+        $this->relatedAssets = $this->normalizeList($relatedAssets);
+
+        return $this;
+    }
+
+    /** @return list<string> */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /** @param list<string> $tags */
+    public function setTags(array $tags): self
+    {
+        $this->tags = $this->normalizeList($tags);
 
         return $this;
     }
@@ -131,5 +219,22 @@ class EventPost
         }
 
         return $this;
+    }
+
+    /**
+     * @param array<mixed> $items
+     * @return list<string>
+     */
+    private function normalizeList(array $items): array
+    {
+        $normalized = [];
+        foreach ($items as $item) {
+            $value = trim((string) $item);
+            if ($value !== '' && ! in_array($value, $normalized, true)) {
+                $normalized[] = $value;
+            }
+        }
+
+        return $normalized;
     }
 }

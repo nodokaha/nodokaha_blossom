@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}プロジェクト見直しブログ{% endblock %}</title>
+        <title>{% block title %}BasisVR コンテンツ投稿{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>■</text></svg>">
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
@@ -17,11 +17,11 @@
     <body>
         <header class="retro-header">
             <nav class="retro-nav">
-                <a href="{{ path('app_home') }}" class="brand-link">Review Log</a>
-                <a href="{{ path('basisvr_event_index') }}">レビュー一覧</a>
+                <a href="{{ path('app_home') }}" class="brand-link">BasisVR Contents</a>
+                <a href="{{ path('basisvr_event_index') }}">コンテンツ一覧</a>
                 <a href="{{ path('basisvr_event_new') }}">投稿する</a>
                 <a href="{{ path('app_portfolio_secd_vm') }}">SECD VM</a>
-                <a href="{{ path('app_portfolio_bloom_signal') }}">Review Signal</a>
+                <a href="{{ path('app_portfolio_bloom_signal') }}">Content Signal</a>
 
                 {% if app.user %}
                     <span class="retro-user">{{ app.user.userIdentifier }}</span>

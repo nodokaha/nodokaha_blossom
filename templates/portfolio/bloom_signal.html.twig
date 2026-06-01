@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}REVIEW SIGNAL{% endblock %}
+{% block title %}CONTENT SIGNAL{% endblock %}
 
 {% block body %}
 <main class="portfolio-shell">
     <section class="portfolio-panel game-hero">
-        <p class="eyebrow">REVIEW MINI GAME</p>
-        <h1>REVIEW SIGNAL</h1>
-        <p class="lead">4つの観点を並べて、レビュー記事の骨格を整える短編ゲームです。論点・根拠・揺らぎの均衡で公開判断が変わります。</p>
+        <p class="eyebrow">CONTENT MINI GAME</p>
+        <h1>CONTENT SIGNAL</h1>
+        <p class="lead">4つの観点を並べて、BasisVRコンテンツ投稿の骨格を整える短編ゲームです。種別・説明・関連アセットの均衡で公開判断が変わります。</p>
     </section>
 
     <section class="vm-layout">
@@ -21,13 +21,13 @@
                     {% endfor %}
                 </select>
             {% endfor %}
-            <button type="submit">レビューを組み立てる</button>
+            <button type="submit">投稿内容を組み立てる</button>
         </form>
 
         <aside class="portfolio-panel score-card">
             <h2>Score {{ game.score }}</h2>
             <div class="meter"><span style="width: {{ game.score > 60 ? 100 : (game.score / 60 * 100) }}%"></span></div>
-            <p>論点 {{ game.bloom }} / 根拠 {{ game.resonance }} / 揺らぎ {{ game.drift }}</p>
+            <p>種別 {{ game.bloom }} / 説明 {{ game.resonance }} / 補足 {{ game.drift }}</p>
             <p><strong>{{ game.ending }}</strong></p>
         </aside>
     </section>
