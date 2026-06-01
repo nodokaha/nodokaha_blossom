@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Garden;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,13 +39,7 @@ final class RegistrationController extends AbstractController
                 $user->setEmail($email);
                 $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
 
-                $garden = new Garden();
-                $garden->setOwner($user);
-                $garden->setName('はじまりの箱庭');
-                $garden->setDescription('ユーザー作成時に自動で配布される、最初の箱庭です。');
-
                 $entityManager->persist($user);
-                $entityManager->persist($garden);
                 $entityManager->flush();
 
                 $this->addFlash('success', 'ユーザーを作成しました。ログインしてください。');

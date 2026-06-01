@@ -1,18 +1,18 @@
 {% extends 'basisvr_base.html.twig' %}
 
-{% block title %}{{ post.title }} — BasisVR イベントブログ{% endblock %}
+{% block title %}{{ post.title }} — プロジェクト見直しブログ{% endblock %}
 
 {% block body %}
 <main id="basisvr-main" class="blog-page blog-article-page">
   <nav class="breadcrumb" aria-label="パンくずリスト">
-    <a href="{{ path('basisvr_event_index') }}">イベントブログ</a>
+    <a href="{{ path('basisvr_event_index') }}">レビュー一覧</a>
     <span aria-hidden="true">/</span>
     <span>{{ post.title }}</span>
   </nav>
 
   <section class="article-hero">
     <div>
-      <p class="eyebrow">Event Post</p>
+      <p class="eyebrow">Review Article</p>
       <h1>{{ post.title }}</h1>
       <p class="article-meta">{{ post.authorName }} · <time datetime="{{ post.publishedAt|date('c') }}">{{ post.publishedAt|date('Y.m.d H:i') }}</time></p>
     </div>
@@ -43,7 +43,7 @@
       {% else %}
         <div class="empty-state card">
           <h3>まだコメントはありません</h3>
-          <p>参加表明や質問を投稿すると、次の人が状況を把握しやすくなります。</p>
+          <p>補足の観点、再検証したい点、次の改善案を残せます。</p>
         </div>
       {% endfor %}
     </div>
@@ -52,7 +52,7 @@
   <section id="comment-form" class="comment-form" aria-labelledby="comment-form-heading">
     <div class="section-header">
       <h2 id="comment-form-heading">コメントを書く</h2>
-      <p>スパム防止のため、空欄のままにする検証欄を自動確認しています。</p>
+      <p>追加の検証観点や判断材料を短く共有できます。</p>
     </div>
     <div class="card form-card">
       {{ form_start(commentForm, {'attr': {'class': 'blog-form'}}) }}

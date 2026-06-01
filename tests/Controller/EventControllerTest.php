@@ -9,68 +9,68 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class EventControllerTest extends WebTestCase
 {
-    public function testEventIndexDisplaysPosts(): void
+    public function testReviewIndexDisplaysPosts(): void
     {
         $client = static::createClient();
 
         $post = (new EventPost())
-            ->setTitle('BasisVR Meetup')
+            ->setTitle('検索体験レビュー')
             ->setAuthorName('admin')
             ->setContent("Line1\nLine2");
         $post->addComment((new EventComment())
             ->setAuthorName('guest')
-            ->setContent('参加します'));
+            ->setContent('補足します'));
 
         $repo = $this->createStub(EventPostRepository::class);
         $repo->method('findLatest')->willReturn([$post]);
         static::getContainer()->set(EventPostRepository::class, $repo);
 
-        $client->request('GET', '/basisvr/events');
+        $client->request('GET', '/reviews');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'BasisVR イベントブログ');
-        $this->assertSelectorTextContains('body', 'BasisVR Meetup');
+        $this->assertSelectorTextContains('h1', 'プロジェクト見直しブログ');
+        $this->assertSelectorTextContains('body', '検索体験レビュー');
         $this->assertSelectorExists('.post-list-item');
         $this->assertSelectorTextContains('.post-comment-count', '1 comments');
     }
 
-    public function testEventNewSubmitsAndRedirects(): void
+    public function testReviewNewSubmitsAndRedirects(): void
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/basisvr/events/new');
-        $form = $crawler->selectButton('投稿を公開')->form([
-            'event_post[title]' => 'Summer Event',
+        $crawler = $client->request('GET', '/reviews/new');
+        $form = $crawler->selectButton('レビューを公開')->form([
+            'event_post[title]' => 'Summer Review',
             'event_post[authorName]' => 'staff',
-            'event_post[content]' => 'Event details',
+            'event_post[content]' => 'Review details',
             'event_post[website]' => '',
         ]);
 
         $client->submit($form);
 
-        $this->assertResponseRedirects('/basisvr/events');
+        $this->assertResponseRedirects('/reviews');
 
         $client->followRedirect();
-        $this->assertSelectorTextContains('body', 'Summer Event');
+        $this->assertSelectorTextContains('body', 'Summer Review');
     }
 
-    public function testEventNewRejectsHoneypotSubmission(): void
+    public function testReviewNewRejectsHoneypotSubmission(): void
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/basisvr/events/new');
-        $form = $crawler->selectButton('投稿を公開')->form([
-            'event_post[title]' => 'Spam Event',
+        $crawler = $client->request('GET', '/reviews/new');
+        $form = $crawler->selectButton('レビューを公開')->form([
+            'event_post[title]' => 'Spam Review',
             'event_post[authorName]' => 'bot',
-            'event_post[content]' => 'Automated content',
+            'event_post[content]' => 'Automated review',
             'event_post[website]' => 'https://spam.example',
         ]);
 
         $client->submit($form);
 
-        $this->assertResponseRedirects('/basisvr/events');
+        $this->assertResponseRedirects('/reviews');
 
         $client->followRedirect();
-        $this->assertSelectorTextNotContains('body', 'Spam Event');
+        $this->assertSelectorTextNotContains('body', 'Spam Review');
     }
 }

@@ -101,7 +101,7 @@
     <main class="register-wrap">
         <section class="register-card">
             <h1 class="register-title">ユーザー登録</h1>
-            <p class="register-sub">登録後に、あなた専用の箱庭管理画面へ移動できます。</p>
+            <p class="register-sub">登録後に、レビュー記事の投稿とコメント確認を行えます。</p>
 
             {% if message %}
                 <p class="register-alert">{{ message }}</p>
@@ -109,7 +109,6 @@
 
             <div class="register-links">
                 <a class="register-link" href="{{ path('app_home') }}">トップへ戻る</a>
-                <a class="register-link" href="{{ path('app_garden_list') }}">みんなの箱庭一覧を見る</a>
             </div>
 
             <form method="post">
