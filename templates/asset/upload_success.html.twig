@@ -22,6 +22,10 @@
                         <span>{{ (asset.size / 1024 / 1024)|round(2) }} MB</span>
                     </div>
                     <div class="info-row">
+                        <label>種別:</label>
+                        <span>{{ asset.assetTypeLabel }}</span>
+                    </div>
+                    <div class="info-row">
                         <label>MIME Type:</label>
                         <span>{{ asset.mimeType }}</span>
                     </div>

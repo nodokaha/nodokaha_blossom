@@ -17,6 +17,7 @@
                         <tr>
                             <th>ファイル名</th>
                             <th>サイズ</th>
+                            <th>種別</th>
                             <th>タイプ</th>
                             <th>アップロード日時</th>
                             <th>URL</th>
@@ -29,6 +30,9 @@
                         <tr>
                             <td class="filename">{{ file.originalName }}</td>
                             <td class="filesize">{{ (file.size / 1024 / 1024)|round(2) }} MB</td>
+                            <td class="asset-type">
+                                <span class="asset-type-badge asset-type-{{ file.assetType }}">{{ file.assetTypeLabel }}</span>
+                            </td>
                             <td class="mimetype">
                                 <span class="mime-badge">{{ file.mimeType }}</span>
                             </td>
@@ -168,6 +172,27 @@
         .filesize {
             text-align: right;
             font-variant-numeric: tabular-nums;
+        }
+
+        .asset-type-badge {
+            display: inline-block;
+            background-color: #f0f7ed;
+            color: #2f6b1f;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .asset-type-world {
+            background-color: #fff4d6;
+            color: #8a5a00;
+        }
+
+        .asset-type-avatar {
+            background-color: #f3e8ff;
+            color: #5b21b6;
         }
 
         .mime-badge {

@@ -18,6 +18,18 @@ final class AssetControllerUploadTest extends WebTestCase
         $this->assertStringContainsString('アセットをアップロード', $crawler->text());
     }
 
+    public function testUploadFormDisplaysAssetTypeChoices(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/basisvr/cdn/upload');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('種別', $crawler->text());
+        $this->assertStringContainsString('プロップ', $crawler->text());
+        $this->assertStringContainsString('ワールド', $crawler->text());
+        $this->assertStringContainsString('アバター', $crawler->text());
+    }
+
     public function testUploadFormDisplaysFileLabel(): void
     {
         $client = static::createClient();

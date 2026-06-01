@@ -13,8 +13,12 @@ class AssetStorageService
     {
     }
 
-    public function store(UploadedFile $uploadedFile, string $encryptionKey): AssetFile
+    public function store(UploadedFile $uploadedFile, string $encryptionKey, string $assetType): AssetFile
     {
+        if (! AssetFile::isValidAssetType($assetType)) {
+            throw new \InvalidArgumentException(sprintf('Invalid asset type "%s".', $assetType));
+        }
+
         $originalExtension = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_EXTENSION);
         $extension = $originalExtension !== '' ? strtolower($originalExtension) : ($uploadedFile->guessExtension() ?: 'bin');
         $storageKey = sprintf('%s.%s', bin2hex(random_bytes(16)), $extension);
@@ -30,7 +34,8 @@ class AssetStorageService
             ->setOriginalName($uploadedFile->getClientOriginalName())
             ->setMimeType($mimeType)
             ->setSize($size)
-            ->setEncryptionKey($encryptionKey);
+            ->setEncryptionKey($encryptionKey)
+            ->setAssetType($assetType);
     }
 
     public function resolvePath(string $storageKey): string

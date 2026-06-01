@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\AssetFile;
 use App\Service\Asset\AssetStorageService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -49,12 +50,13 @@ final class AssetStorageServiceTest extends TestCase
 
         $service = new AssetStorageService($this->uploadDirectory);
         $encryptionKey = 'test-encryption-key-12345';
-        $assetFile = $service->store($uploadedFile, $encryptionKey);
+        $assetFile = $service->store($uploadedFile, $encryptionKey, AssetFile::ASSET_TYPE_AVATAR);
 
         $this->assertSame('avatar.bin', $assetFile->getOriginalName());
         $this->assertSame('application/octet-stream', $assetFile->getMimeType());
         $this->assertSame(4, $assetFile->getSize());
         $this->assertSame($encryptionKey, $assetFile->getEncryptionKey());
+        $this->assertSame(AssetFile::ASSET_TYPE_AVATAR, $assetFile->getAssetType());
         $this->assertMatchesRegularExpression('/^[a-f0-9]{32}\.bin$/', $assetFile->getStorageKey());
         $this->assertFileExists($this->uploadDirectory.'/'.$assetFile->getStorageKey());
     }
