@@ -9,68 +9,80 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class EventControllerTest extends WebTestCase
 {
-    public function testReviewIndexDisplaysPosts(): void
+    public function testContentIndexDisplaysPosts(): void
     {
         $client = static::createClient();
 
         $post = (new EventPost())
-            ->setTitle('検索体験レビュー')
+            ->setTitle('水辺のランタンProp')
+            ->setContentType(EventPost::CONTENT_TYPE_PROP)
             ->setAuthorName('admin')
-            ->setContent("Line1\nLine2");
+            ->setDescription("Line1\nLine2")
+            ->setRelatedAssets(['lantern.bee'])
+            ->setTags(['fantasy', 'night']);
         $post->addComment((new EventComment())
             ->setAuthorName('guest')
-            ->setContent('補足します'));
+            ->setContent('導入します'));
 
         $repo = $this->createStub(EventPostRepository::class);
         $repo->method('findLatest')->willReturn([$post]);
         static::getContainer()->set(EventPostRepository::class, $repo);
 
-        $client->request('GET', '/reviews');
+        $client->request('GET', '/basisvr/contents');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'プロジェクト見直しブログ');
-        $this->assertSelectorTextContains('body', '検索体験レビュー');
+        $this->assertSelectorTextContains('h1', 'BasisVR コンテンツ投稿');
+        $this->assertSelectorTextContains('body', '水辺のランタンProp');
+        $this->assertSelectorTextContains('body', 'Prop');
+        $this->assertSelectorTextContains('body', '#fantasy');
         $this->assertSelectorExists('.post-list-item');
         $this->assertSelectorTextContains('.post-comment-count', '1 comments');
     }
 
-    public function testReviewNewSubmitsAndRedirects(): void
+    public function testContentNewSubmitsAndRedirects(): void
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/reviews/new');
-        $form = $crawler->selectButton('レビューを公開')->form([
-            'event_post[title]' => 'Summer Review',
+        $crawler = $client->request('GET', '/basisvr/contents/new');
+        $form = $crawler->selectButton('コンテンツを公開')->form([
+            'event_post[title]' => 'Summer World',
+            'event_post[contentType]' => EventPost::CONTENT_TYPE_WORLD,
             'event_post[authorName]' => 'staff',
-            'event_post[content]' => 'Review details',
+            'event_post[description]' => 'World details',
+            'event_post[relatedAssets]' => 'summer-world.bee, thumbnail.png',
+            'event_post[tags]' => 'world, summer',
             'event_post[website]' => '',
         ]);
 
         $client->submit($form);
 
-        $this->assertResponseRedirects('/reviews');
+        $this->assertResponseRedirects('/basisvr/contents');
 
         $client->followRedirect();
-        $this->assertSelectorTextContains('body', 'Summer Review');
+        $this->assertSelectorTextContains('body', 'Summer World');
+        $this->assertSelectorTextContains('body', '#summer');
     }
 
-    public function testReviewNewRejectsHoneypotSubmission(): void
+    public function testContentNewRejectsHoneypotSubmission(): void
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/reviews/new');
-        $form = $crawler->selectButton('レビューを公開')->form([
-            'event_post[title]' => 'Spam Review',
+        $crawler = $client->request('GET', '/basisvr/contents/new');
+        $form = $crawler->selectButton('コンテンツを公開')->form([
+            'event_post[title]' => 'Spam Avatar',
+            'event_post[contentType]' => EventPost::CONTENT_TYPE_AVATAR,
             'event_post[authorName]' => 'bot',
-            'event_post[content]' => 'Automated review',
+            'event_post[description]' => 'Automated content',
+            'event_post[relatedAssets]' => 'spam.bee',
+            'event_post[tags]' => 'avatar',
             'event_post[website]' => 'https://spam.example',
         ]);
 
         $client->submit($form);
 
-        $this->assertResponseRedirects('/reviews');
+        $this->assertResponseRedirects('/basisvr/contents');
 
         $client->followRedirect();
-        $this->assertSelectorTextNotContains('body', 'Spam Review');
+        $this->assertSelectorTextNotContains('body', 'Spam Avatar');
     }
 }

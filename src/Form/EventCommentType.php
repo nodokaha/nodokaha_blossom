@@ -24,17 +24,17 @@ class EventCommentType extends AbstractType
                 'help' => 'コメント欄に表示される名前です。',
                 'attr' => [
                     'maxlength' => 80,
-                    'placeholder' => '例：reviewer',
+                    'placeholder' => '例：basis_user',
                     'autocomplete' => 'name',
                 ],
             ])
             ->add('content', TextareaType::class, [
                 'label' => 'コメント',
-                'help' => '補足観点、再検証したい点、改善案などを簡潔に投稿できます。',
+                'help' => '使い方の補足、導入時の気づき、改善案などを簡潔に投稿できます。',
                 'attr' => [
                     'rows' => 5,
                     'maxlength' => 1200,
-                    'placeholder' => '例：この判断は依存関係の更新後に再確認したいです。',
+                    'placeholder' => '例：このWorldは夜設定のライト調整も合いそうです。',
                 ],
             ])
             ->add('website', TextType::class, [

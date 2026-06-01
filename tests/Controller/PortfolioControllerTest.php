@@ -12,15 +12,15 @@ final class PortfolioControllerTest extends WebTestCase
         static::ensureKernelShutdown();
     }
 
-    public function testReviewHomeDisplaysPrimaryRoutes(): void
+    public function testContentHomeDisplaysPrimaryRoutes(): void
     {
         $client = static::createClient();
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'プロジェクト見直しブログ');
+        $this->assertSelectorTextContains('h1', 'BasisVR コンテンツ投稿');
         $this->assertSelectorTextContains('body', 'SECD VM');
-        $this->assertSelectorTextContains('body', 'REVIEW SIGNAL');
+        $this->assertSelectorTextContains('body', 'CONTENT SIGNAL');
     }
 
     public function testSecdVmPageRunsDefaultProgram(): void
@@ -30,16 +30,16 @@ final class PortfolioControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'SECD VM 簡易インタプリタ');
-        $this->assertSelectorTextContains('body', '公開: 読み直し完了');
+        $this->assertSelectorTextContains('body', '公開: コンテンツ確認完了');
     }
 
-    public function testReviewSignalPageDisplaysScore(): void
+    public function testContentSignalPageDisplaysScore(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/tools/review-signal');
+        $client->request('GET', '/tools/content-signal');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'REVIEW SIGNAL');
+        $this->assertSelectorTextContains('h1', 'CONTENT SIGNAL');
         $this->assertSelectorTextContains('body', 'Score');
     }
 }
