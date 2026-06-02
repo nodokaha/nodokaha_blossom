@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}アセット詳細{% endblock %}
+
+{% block body %}
+    <h1>{{ asset.name }}</h1>
+
+    <dl>
+        <dt>説明</dt>
+        <dd>{{ asset.description ?: 'なし' }}</dd>
+
+        <dt>タイプ</dt>
+        <dd>{{ asset.type }}</dd>
+
+        <dt>ファイル名</dt>
+        <dd>{{ asset.filename }}</dd>
+
+        <dt>サイズ</dt>
+        <dd>{{ asset.fileSize }} bytes</dd>
+
+        <dt>MIMEタイプ</dt>
+        <dd>{{ asset.mimeType }}</dd>
+
+        <dt>アップロード日時</dt>
+        <dd>{{ asset.uploadedAt|date('Y-m-d H:i') }}</dd>
+    </dl>
+
+    <p>
+        <a href="{{ path('asset_download', {'id': asset.id}) }}">ダウンロード</a>
+        <a href="{{ path('asset_index') }}">一覧にもどる</a>
+    </p>
+
+    <form method="post" action="{{ path('asset_delete', {'id': asset.id}) }}" onsubmit="return confirm('本当に削除しますか？');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ asset.id) }}">
+        <button type="submit">削除</button>
+    </form>
+{% endblock %}

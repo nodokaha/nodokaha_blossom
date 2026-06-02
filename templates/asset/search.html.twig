@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}アセット検索{% endblock %}
+
+{% block body %}
+    <h1>アセット検索</h1>
+
+    <form method="get" action="{{ path('asset_search') }}">
+        <label for="q">キーワード</label>
+        <input id="q" name="q" value="{{ term }}" required>
+        <button type="submit">検索</button>
+    </form>
+
+    {% if term is not empty %}
+        <h2>検索結果: 「{{ term }}」</h2>
+
+        {% if assets is empty %}
+            <p>一致するアセットはありませんでした。</p>
+        {% else %}
+            <ul>
+                {% for asset in assets %}
+                    <li>
+                        <a href="{{ path('asset_show', {'id': asset.id}) }}">{{ asset.name }}</a>
+                        ({{ asset.type }}, {{ asset.uploadedAt|date('Y-m-d') }})
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+
+    <p><a href="{{ path('asset_index') }}">一覧に戻る</a></p>
+{% endblock %}

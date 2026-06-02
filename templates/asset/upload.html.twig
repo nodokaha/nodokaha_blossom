@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}アセットアップロード{% endblock %}
+
+{% block body %}
+    <h1>アセットアップロード</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">アップロード</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('asset_index') }}">アセット一覧に戻る</a></p>
+{% endblock %}

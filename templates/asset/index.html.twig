@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}アセット一覧{% endblock %}
+
+{% block body %}
+    <h1>アセット一覧</h1>
+
+    <nav>
+        <a href="{{ path('asset_upload') }}">新しいアセットをアップロード</a>
+        <a href="{{ path('asset_search') }}">検索</a>
+    </nav>
+
+    {% if assets is empty %}
+        <p>アセットが見つかりません。</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>名前</th>
+                    <th>タイプ</th>
+                    <th>サイズ</th>
+                    <th>アップロード日</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                    <tr>
+                        <td><a href="{{ path('asset_show', {'id': asset.id}) }}">{{ asset.name }}</a></td>
+                        <td>{{ asset.type }}</td>
+                        <td>{{ asset.fileSize }} bytes</td>
+                        <td>{{ asset.uploadedAt|date('Y-m-d H:i') }}</td>
+                        <td>
+                            <a href="{{ path('asset_download', {'id': asset.id}) }}">ダウンロード</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
