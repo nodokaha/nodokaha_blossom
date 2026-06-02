@@ -4,7 +4,6 @@ framework:
         paths:
             - assets/
         missing_import_mode: strict
-    test: true
 
 when@prod:
     framework:

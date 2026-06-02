@@ -1,8 +1,0 @@
-[
-  {"opcode":"LDC","args":"7"},
-  {"opcode":"ST","args":"seed"},
-  {"opcode":"LD","args":"seed"},
-  {"opcode":"LDC","args":"3"},
-  {"opcode":"MUL","args":""},
-  {"opcode":"STOP","args":""}
-]

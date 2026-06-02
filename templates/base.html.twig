@@ -2,40 +2,23 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}BasisVR コンテンツ投稿{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>■</text></svg>">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
 
         {% block javascripts %}
-            {% if app.environment != 'test' %}
-                {% block importmap %}{{ importmap('app') }}{% endblock %}
-            {% endif %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+
+        {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
+        {% if frankenphpHotReload %}
+        <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
+        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
+        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+        {% endif %}
     </head>
     <body>
-        <header class="retro-header">
-            <nav class="retro-nav">
-                <a href="{{ path('app_home') }}" class="brand-link">BasisVR Contents</a>
-                <a href="{{ path('basisvr_event_index') }}">コンテンツ一覧</a>
-                <a href="{{ path('basisvr_event_new') }}">投稿する</a>
-                <a href="{{ path('app_portfolio_secd_vm') }}">SECD VM</a>
-                <a href="{{ path('app_portfolio_bloom_signal') }}">Content Signal</a>
-
-                {% if app.user %}
-                    <span class="retro-user">{{ app.user.userIdentifier }}</span>
-                    <form method="post" action="{{ path('app_logout') }}" class="retro-logout-form">
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                        <button type="submit">ログアウト</button>
-                    </form>
-                {% else %}
-                    <a href="{{ path('app_register') }}">ユーザー登録</a>
-                    <a href="{{ path('app_login') }}">ログイン</a>
-                {% endif %}
-            </nav>
-        </header>
-
         {% block body %}{% endblock %}
     </body>
 </html>
