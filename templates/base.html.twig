@@ -19,6 +19,22 @@
         {% endif %}
     </head>
     <body>
+        <nav>
+            <ul>
+                <li><a href="{{ path('asset_index') }}">アセット</a></li>
+                <li><a href="{{ path('event_index') }}">イベント</a></li>
+                <li><a href="{{ path('event_calendar') }}">カレンダー</a></li>
+            </ul>
+        </nav>
+
+        {% for label, messages in app.flashes %}
+            <div class="flash-{{ label }}">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
         {% block body %}{% endblock %}
     </body>
 </html>

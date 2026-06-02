@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}イベント一覧{% endblock %}
+
+{% block body %}
+    <h1>イベント一覧</h1>
+
+    <nav>
+        <a href="{{ path('event_create') }}">イベント作成</a>
+        <a href="{{ path('event_calendar') }}">カレンダー表示</a>
+    </nav>
+
+    {% if events is empty %}
+        <p>登録されたイベントはありません。</p>
+    {% else %}
+        <ul>
+            {% for event in events %}
+                <li>
+                    <a href="{{ path('event_show', {'id': event.id}) }}">{{ event.title }}</a>
+                    ({{ event.startAt|date('Y-m-d H:i') }})
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -81,6 +81,8 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
             "importmap:install": "symfony-cmd"
         },
+        "phpstan": "phpstan analyse -c phpstan.neon",
+        "test": "phpunit",
         "post-install-cmd": [
             "@auto-scripts"
         ],
@@ -99,6 +101,8 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-doctrine": "^2.0",
         "phpunit/phpunit": "^13.1",
         "symfony/browser-kit": "8.1.*",
         "symfony/css-selector": "8.1.*",

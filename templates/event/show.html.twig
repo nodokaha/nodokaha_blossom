@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}イベント詳細{% endblock %}
+
+{% block body %}
+    <h1>{{ event.title }}</h1>
+
+    <dl>
+        <dt>説明</dt>
+        <dd>{{ event.description ?: 'なし' }}</dd>
+
+        <dt>場所</dt>
+        <dd>{{ event.location ?: '未設定' }}</dd>
+
+        <dt>開始</dt>
+        <dd>{{ event.startAt|date('Y-m-d H:i') }}</dd>
+
+        <dt>終了</dt>
+        <dd>{{ event.endAt ? event.endAt|date('Y-m-d H:i') : '未設定' }}</dd>
+
+        <dt>終日</dt>
+        <dd>{{ event.allDay ? 'はい' : 'いいえ' }}</dd>
+
+        <dt>作成日時</dt>
+        <dd>{{ event.createdAt|date('Y-m-d H:i') }}</dd>
+    </dl>
+
+    <p>
+        <a href="{{ path('event_edit', {'id': event.id}) }}">編集</a>
+        <a href="{{ path('event_index') }}">一覧に戻る</a>
+    </p>
+
+    <form method="post" action="{{ path('event_delete', {'id': event.id}) }}" onsubmit="return confirm('本当に削除しますか？');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+        <button type="submit">削除</button>
+    </form>
+{% endblock %}

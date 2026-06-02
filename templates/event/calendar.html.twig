@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}イベントカレンダー{% endblock %}
+
+{% block body %}
+    <h1>イベントカレンダー</h1>
+
+    <nav>
+        <a href="{{ path('event_index') }}">一覧</a>
+        <a href="{{ path('event_create') }}">イベント作成</a>
+    </nav>
+
+    <section>
+        <form method="get" action="{{ path('event_calendar') }}">
+            <label for="year">年</label>
+            <input id="year" name="year" type="number" value="{{ year }}" min="1970" required>
+            <label for="month">月</label>
+            <input id="month" name="month" type="number" value="{{ month }}" min="1" max="12" required>
+            <button type="submit">表示</button>
+        </form>
+    </section>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>月</th>
+                <th>火</th>
+                <th>水</th>
+                <th>木</th>
+                <th>金</th>
+                <th>土</th>
+                <th>日</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in calendar %}
+                <tr>
+                    {% for day in week %}
+                        <td>
+                            {% if day is not null %}
+                                <strong>{{ day.date.format('j') }}</strong>
+                                {% if day.events is not empty %}
+                                    <ul>
+                                        {% for event in day.events %}
+                                            <li><a href="{{ path('event_show', {'id': event.id}) }}">{{ event.title }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

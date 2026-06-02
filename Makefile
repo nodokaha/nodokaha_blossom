@@ -22,3 +22,5 @@ cache-clear:
 	@docker compose exec -T app php bin/console cache:clear
 down:
 	@docker compose down
+phpstan:
+	@docker compose exec -T app vendor/bin/phpstan analyse -l max --memory-limit=2G src
