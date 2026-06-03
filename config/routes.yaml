@@ -4,8 +4,7 @@
 # Methods with the #[Route] attribute are automatically imported.
 # See also https://symfony.com/doc/current/routing.html
 
-# To list all registered routes, run the following command:
-#   bin/console debug:router
-
+# Import controllers routes defined as PHP attributes from src/Controller
 controllers:
-    resource: routing.controllers
+    resource: ../src/Controller/
+    type: attribute
