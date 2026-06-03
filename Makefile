@@ -1,26 +1,37 @@
+.PHONY: setup test rebuild-db cache-clear down phpstan ci
+
+COMPOSE=docker compose -f docker-compose.yml
+APP=app
+
 setup:
-	@docker compose up -d --build
-	@docker compose exec -T app composer install
-	@docker compose exec -T app php bin/console doctrine:database:create --if-not-exists --no-interaction
-	@docker compose exec -T app php bin/console doctrine:schema:create --no-interaction
-	@docker compose exec -T app php bin/console doctrine:schema:create --no-interaction
-	@docker compose exec -T app php bin/console doctrine:fixtures:load --no-interaction
-	@docker compose exec -T app php bin/console cache:clear
-	@docker compose exec -T app php bin/console cache:warm
-	@docker compose exec -T app php bin/console assets:install --symlink --relative public
+	@$(COMPOSE) up -d --build
+	@$(COMPOSE) exec -T $(APP) composer install
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:database:create --if-not-exists --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:schema:create --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:fixtures:load --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console cache:clear
+	@$(COMPOSE) exec -T $(APP) php bin/console cache:warm
+	@$(COMPOSE) exec -T $(APP) php bin/console assets:install --symlink --relative public
+
 test:
-	@docker compose exec -T app php bin/phpunit
-rebuild-db:
-	@docker compose exec -T app php bin/console doctrine:database:drop --force --if-exists --no-interaction
-	@docker compose exec -T app php bin/console doctrine:database:create --if-not-exists --no-interaction
-	@docker compose exec -T app php bin/console doctrine:schema:create --no-interaction
-	@docker compose exec -T app php bin/console doctrine:fixtures:load --no-interaction
-	@docker compose exec -T app php bin/console cache:clear
-	@docker compose exec -T app php bin/console cache:warm
-	@docker compose exec -T app php bin/console assets:install --symlink --relative public
-cache-clear:
-	@docker compose exec -T app php bin/console cache:clear
-down:
-	@docker compose down
+	@$(COMPOSE) exec -T $(APP) sh -lc 'APP_ENV=test php bin/phpunit'
+
 phpstan:
-	@docker compose exec -T app vendor/bin/phpstan analyse -l max --memory-limit=2G src
+	@$(COMPOSE) exec -T $(APP) vendor/bin/phpstan analyse -c phpstan.neon
+
+ci: test phpstan
+
+rebuild-db:
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:database:drop --force --if-exists --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:database:create --if-not-exists --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:schema:create --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:fixtures:load --no-interaction
+	@$(COMPOSE) exec -T $(APP) php bin/console cache:clear
+	@$(COMPOSE) exec -T $(APP) php bin/console cache:warm
+	@$(COMPOSE) exec -T $(APP) php bin/console assets:install --symlink --relative public
+
+cache-clear:
+	@$(COMPOSE) exec -T $(APP) php bin/console cache:clear
+
+down:
+	@$(COMPOSE) down

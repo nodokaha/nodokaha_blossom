@@ -9,7 +9,7 @@ class AssetControllerTest extends WebTestCase
     public function testIndexPageLoads(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/assets/');
+        $crawler = $client->request('GET', '/media/');
 
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('アセット一覧', $crawler->filter('h1')->text());
@@ -18,7 +18,7 @@ class AssetControllerTest extends WebTestCase
     public function testUploadPageLoads(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/assets/upload');
+        $crawler = $client->request('GET', '/media/upload');
 
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('アセットアップロード', $crawler->filter('h1')->text());

@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/assets', name: 'asset_')]
+#[Route('/media', name: 'asset_')]
 class AssetController extends AbstractController
 {
     private AssetRepository $repository;
