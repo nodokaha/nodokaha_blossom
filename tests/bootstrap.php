@@ -21,7 +21,7 @@ if (($_SERVER['APP_ENV'] ?? 'test') === 'test') {
 
     if ($metadata !== []) {
         $schemaTool = new SchemaTool($entityManager);
-        $schemaTool->updateSchema($metadata, true);
+        $schemaTool->updateSchema($metadata);
     }
 
     $kernel->shutdown();

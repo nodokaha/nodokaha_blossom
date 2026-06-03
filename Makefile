@@ -17,7 +17,7 @@ test:
 	@$(COMPOSE) exec -T $(APP) sh -lc 'APP_ENV=test php bin/phpunit'
 
 phpstan:
-	@$(COMPOSE) exec -T $(APP) vendor/bin/phpstan analyse -c phpstan.neon
+	@$(COMPOSE) exec -T $(APP) vendor/bin/phpstan analyse --memory-limit=2G -c phpstan.neon
 
 ci: test phpstan
 
@@ -35,3 +35,5 @@ cache-clear:
 
 down:
 	@$(COMPOSE) down
+migration:
+	@$(COMPOSE) exec -T $(APP) php bin/console doctrine:migrations:migrate --no-interaction
