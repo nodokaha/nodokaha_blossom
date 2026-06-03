@@ -7,7 +7,7 @@ RUN apt-get update \
         libpq-dev \
         libicu-dev \
         libzip-dev \
-    && docker-php-ext-install -j"$(nproc)" pdo pdo_pgsql intl zip \
+    && docker-php-ext-install -j"$(nproc)" pdo pdo_pgsql pdo_mysql intl zip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

@@ -26,6 +26,7 @@ services:
       MYSQL_ROOT_PASSWORD: app
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -papp --silent"]
       interval: 5s

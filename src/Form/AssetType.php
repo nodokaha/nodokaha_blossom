@@ -49,9 +49,9 @@ class AssetType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
-                    new File([
-                        'maxSize' => '100M',
-                        'mimeTypes' => [
+                    new File(
+                        maxSize: '100M',
+                        mimeTypes: [
                             'application/zip',
                             'application/x-rar-compressed',
                             'application/x-7z-compressed',
@@ -60,8 +60,8 @@ class AssetType extends AbstractType
                             'image/gif',
                             'application/octet-stream',
                         ],
-                        'mimeTypesMessage' => '許可されたファイル形式は ZIP / RAR / 7Z / PNG / JPEG / GIF / octet-stream です。',
-                    ]),
+                        mimeTypesMessage: '許可されたファイル形式は ZIP / RAR / 7Z / PNG / JPEG / GIF / octet-stream です。',
+                    ),
                 ],
             ]);
     }
